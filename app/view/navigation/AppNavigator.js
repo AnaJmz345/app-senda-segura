@@ -14,17 +14,18 @@ const Stack = createStackNavigator();
 
 export default function AppNavigator() {
   return (
-    <NavigationContainer>
+    
       <Stack.Navigator screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="Map" component={BikerMapScreen} />
-        <Stack.Screen name="Profile" component={BikerProfileScreen} />
-        <Stack.Screen name="BikerMedicalDataForm" component={BikerMedicalDataForm} />
+        
         <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen name="Login" component={LoginScreen} />
         <Stack.Screen name="Register" component={RegisterScreen} />
         <Stack.Screen name="Success" component={SuccessScreen} />
+        <Stack.Screen name="Map" component={BikerMapScreen} />
+        <Stack.Screen name="Profile" component={BikerProfileScreen} />
+        <Stack.Screen name="BikerMedicalDataForm" component={BikerMedicalDataForm} />
       </Stack.Navigator>
-    </NavigationContainer>
+    
 
   );
 }

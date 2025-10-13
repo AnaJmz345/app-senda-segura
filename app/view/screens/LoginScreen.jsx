@@ -19,7 +19,7 @@ export default function LoginScreen() {
         <TextInput placeholder="Contraseña" secureTextEntry style={styles.input} placeholderTextColor="#ccc" />
 
         <TouchableOpacity style={styles.button}>
-          <Text style={styles.buttonText}>Iniciar sesión</Text>
+          <Text style={styles.buttonText} onPress={() => navigation.navigate('Map')}>Iniciar sesión</Text>
         </TouchableOpacity>
 
         <Text style={styles.bottomText}>
