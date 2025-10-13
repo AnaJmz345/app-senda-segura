@@ -8,7 +8,6 @@ import {
 } from 'react-native';
 import RouteCard from '../../components/RouteCard';
 import SOSButton from '../../components/SOSButton';
-import colors from '../../constants/colors';
 
 const BikerMapScreen = ({ navigation }) => {
   const [showRouteCard, setShowRouteCard] = useState(false);
@@ -57,18 +56,18 @@ const BikerMapScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: '#DAD7CD',
   },
   header: {
     paddingHorizontal: 20,
     paddingVertical: 15,
-    backgroundColor: colors.surface,
+    backgroundColor: '#A3B18A',
     alignItems: 'center',
   },
   headerTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: colors.textPrimary,
+    color: '#344E41',
   },
   mapContainer: {
     flex: 1,
@@ -76,12 +75,12 @@ const styles = StyleSheet.create({
   },
   mapPlaceholder: {
     flex: 1,
-    backgroundColor: colors.white,
+    backgroundColor: '#ffffff',
     borderRadius: 12,
     justifyContent: 'center',
     alignItems: 'center',
     elevation: 3,
-    shadowColor: colors.darkest,
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
@@ -89,12 +88,12 @@ const styles = StyleSheet.create({
   mapText: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: colors.textPrimary,
+    color: '#344E41',
     marginBottom: 10,
   },
   mapSubText: {
     fontSize: 16,
-    color: colors.darkGray,
+    color: '#666',
     textAlign: 'center',
   },
 });
