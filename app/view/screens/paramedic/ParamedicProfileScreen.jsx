@@ -6,7 +6,7 @@ export default function ParamedicProfileScreen({ navigation }) {
   return (
     <View style={styles.container}>
       <Image
-        source={{ uri: 'https://placekitten.com/200/200' }}
+        source={ require('../../../../assets/gatitoprofile.jpeg') }
         style={styles.avatar}
       />
       <Text style={styles.name}>Pablo Medina</Text>
