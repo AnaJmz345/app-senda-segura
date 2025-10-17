@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import ParamedicProfileScreen from '../screens/paramedic/ParamedicProfileScreen';
 import { createStackNavigator } from '@react-navigation/stack'; // nav
