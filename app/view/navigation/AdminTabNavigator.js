@@ -12,10 +12,12 @@ export default function AdminTabNavigator({ navigation }) {
         <Stack.Screen
           name="AdminMap" 
           component={AdminMapScreen}
+          navigation={navigation}
         />
         <Stack.Screen
           name="AdminProfile" 
           component={AdminProfileScreen}
+          navigation={navigation}
         />
 
     </Stack.Navigator>

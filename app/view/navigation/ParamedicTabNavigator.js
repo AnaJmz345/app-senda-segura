@@ -13,14 +13,17 @@ export default function ParamedicTabNavigator({ navigation }) {
         <Stack.Screen
           name="ParamedicProfileScreen" 
           component={ParamedicProfileScreen}
+          navigation={navigation}
         />
         <Stack.Screen
           name="ActiveBikersScreen" 
           component={ActiveBikersScreen}
+          navigation={navigation}
          />
         <Stack.Screen
           name="CasesHistory" 
           component={CasesHistory}
+          navigation={navigation}
         />
 
     </Stack.Navigator>
