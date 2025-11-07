@@ -7,14 +7,17 @@
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
+
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
+
     "ios": {
       "supportsTablet": true
     },
+
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
@@ -22,8 +25,17 @@
       },
       "edgeToEdgeEnabled": true
     },
+
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+
+    "extra": {
+      "supabaseUrl": "https://epzbwzpwroetcrfvvruv.supabase.co",
+      "supabaseAnonKey": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVwemJ3enB3cm9ldGNyZnZ2cnV2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIzOTUyNjYsImV4cCI6MjA3Nzk3MTI2Nn0.9zOSdbi0tJY823JMYmODzsrTu-QKRmi8TbCmDuOeTv8",
+      "eas": {
+        "projectId": "epzbwzpwroetcrfvvruv"
+      }
     }
   }
 }
