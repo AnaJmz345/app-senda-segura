@@ -17,7 +17,8 @@ export default function TopMenu({navigation}) {
   return (
     <View style={styles.header}>
       <Image
-        source={{ uri: 'https://t3.ftcdn.net/jpg/11/78/12/32/360_F_1178123231_ouiY0cWqrOEFCYmoiJFeBc6oMVv9DBbL.jpg' }}
+      
+        source={require('../../../assets/fondo_top_menu.jpg')} 
         style={styles.headerImage}
       />
 
