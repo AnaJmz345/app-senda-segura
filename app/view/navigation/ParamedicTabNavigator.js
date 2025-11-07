@@ -6,7 +6,7 @@ import CasesHistory from '../screens/paramedic/CasesHistory';
 const Stack = createNativeStackNavigator();
 
 
-export default function ParamedicTabNavigator() {
+export default function ParamedicTabNavigator({ navigation }) {
   return (
     
     <Stack.Navigator screenOptions={{ headerShown: false }} >

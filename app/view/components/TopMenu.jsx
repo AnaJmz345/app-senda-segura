@@ -3,13 +3,13 @@ import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useAuth } from '../context/AuthContext';  // Para obtener el perfil del usuario
 
-export default function TopMenu() {
-  const navigation = useNavigation();
+export default function TopMenu({navigation}) {
+  
   const route = useRoute();
   const { profile } = useAuth(); // Obtener el perfil del usuario autenticado
 
   // Verificar el rol del usuario y adaptar el menú
-  const isBiker = profile?.role === 'biker';
+  const isBiker =true;
   const isParamedic = profile?.role === 'paramedic';
   const isAdmin = profile?.role === 'admin';
   
@@ -25,22 +25,22 @@ export default function TopMenu() {
         {/* Menú para el Ciclista */}
         {isBiker && (
           <>
-            <TouchableOpacity onPress={() => navigation.navigate('Map')}>
+            <TouchableOpacity onPress={() => navigation.navigate('BikerMapScreen')}>
               <Text
                 style={[
                   styles.menuText,
-                  route.name === 'Map' && styles.activeText,
+                  route.name === 'BikerMapScreen' && styles.activeText,
                 ]}
               >
                 Mapa
               </Text>
             </TouchableOpacity>
 
-            <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
+            <TouchableOpacity onPress={() => navigation.navigate('BikerProfileScreen')}>
               <Text
                 style={[
                   styles.menuText,
-                  route.name === 'Profile' && styles.activeText,
+                  route.name === 'BikerProfileScreen' && styles.activeText,
                 ]}
               >
                 Perfil
@@ -52,25 +52,35 @@ export default function TopMenu() {
         {/* Menú para el Paramédico */}
         {isParamedic && (
           <>
-            <TouchableOpacity onPress={() => navigation.navigate('EmergencyCalls')}>
+            <TouchableOpacity onPress={() => navigation.navigate('ParamedicProfileScreen')}>
               <Text
                 style={[
                   styles.menuText,
-                  route.name === 'EmergencyCalls' && styles.activeText,
+                  route.name === 'ParamedicProfileScreen' && styles.activeText,
                 ]}
               >
-                Llamadas de Emergencia
+                Perfil
               </Text>
             </TouchableOpacity>
 
-            <TouchableOpacity onPress={() => navigation.navigate('MedicProfile')}>
+            <TouchableOpacity onPress={() => navigation.navigate('ActiveBikersScreen')}>
               <Text
                 style={[
                   styles.menuText,
-                  route.name === 'MedicProfile' && styles.activeText,
+                  route.name === 'ActiveBikersScreen' && styles.activeText,
                 ]}
               >
-                Perfil Médico
+                Rutas
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => navigation.navigate('CasesHistory')}>
+              <Text
+                style={[
+                  styles.menuText,
+                  route.name === 'CasesHistory' && styles.activeText,
+                ]}
+              >
+                Historial
               </Text>
             </TouchableOpacity>
           </>
@@ -79,25 +89,25 @@ export default function TopMenu() {
         {/* Menú para el Administrador */}
         {isAdmin && (
           <>
-            <TouchableOpacity onPress={() => navigation.navigate('AdminDashboard')}>
+            <TouchableOpacity onPress={() => navigation.navigate('AdminMapScreen')}>
               <Text
                 style={[
                   styles.menuText,
-                  route.name === 'AdminDashboard' && styles.activeText,
+                  route.name === 'AdminMapScreen' && styles.activeText,
                 ]}
               >
-                Dashboard Admin
+                Mapa
               </Text>
             </TouchableOpacity>
 
-            <TouchableOpacity onPress={() => navigation.navigate('UserManagement')}>
+            <TouchableOpacity onPress={() => navigation.navigate('AdminProfileScreen')}>
               <Text
                 style={[
                   styles.menuText,
-                  route.name === 'UserManagement' && styles.activeText,
+                  route.name === 'AdminProfileScreen' && styles.activeText,
                 ]}
               >
-                Gestión de Usuarios
+                Perfil
               </Text>
             </TouchableOpacity>
           </>

@@ -5,7 +5,7 @@ import AdminMapScreen from '../screens/admin/AdminMapScreen';
 const Stack = createNativeStackNavigator();
 
 
-export default function AdminTabNavigator() {
+export default function AdminTabNavigator({ navigation }) {
   return (
     
     <Stack.Navigator screenOptions={{ headerShown: false }} >

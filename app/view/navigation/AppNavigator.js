@@ -54,15 +54,15 @@ function RoleTabs({navigation}) {
   const { profile } = useAuth();
 
   if (!profile) {
-    return <BikerTabNavigator />; // O puedes poner un loading mientras el perfil se carga
+    return <BikerTabNavigator navigation={navigation}/>; // O puedes poner un loading mientras el perfil se carga
   }
 
   // Redirigir al Tab correspondiente según el rol
   if (profile.role === 'biker') {
-    return <BikerTabNavigator />;
+    return <BikerTabNavigator navigation={navigation}/>;
   } else if (profile.role === 'paramedic') {
-    return <ParamedicTabNavigator />;
+    return <ParamedicTabNavigator navigation={navigation}/>;
   } else {
-    return <AdminTabNavigator />; // Default tabs si no hay un rol específico
+    return <AdminTabNavigator navigation={navigation}/>; // Default tabs si no hay un rol específico
   }
 }

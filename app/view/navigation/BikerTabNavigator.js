@@ -6,17 +6,19 @@ import BikerProfileScreen from '../screens/biker/BikerProfileScreen';
 const Stack = createNativeStackNavigator();
 
 
-export default function BikerTabNavigator() {
+export default function BikerTabNavigator({ navigation }) {
   return (
     
     <Stack.Navigator screenOptions={{ headerShown: false }} >
         <Stack.Screen
           name="BikerMapScreen" 
-          component={BikerMapScreen}
+          component={BikerMapScreen }
+          navigation={navigation}
         />
         <Stack.Screen
           name="BikerProfileScreen" 
           component={BikerProfileScreen} 
+          navigation={navigation}
         />
 
     </Stack.Navigator>

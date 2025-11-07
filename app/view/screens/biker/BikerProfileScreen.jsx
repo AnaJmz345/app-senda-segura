@@ -5,12 +5,12 @@ import { Ionicons, FontAwesome5 } from '@expo/vector-icons';
 import TopMenu from '../../components/TopMenu'
 import { useNavigation } from '@react-navigation/native';
 
-export default function ProfileScreen() {
-    const navigation = useNavigation();
+export default function BikerProfileScreen({navigation}) {
+    
   return (
     
       <ScrollView contentContainerStyle={styles.content}>
-        <TopMenu />
+        <TopMenu navigation ={navigation}></TopMenu>
         {/* Imagen y nombre de perfil */}
         <View style={styles.profileSection}>
           <Image
