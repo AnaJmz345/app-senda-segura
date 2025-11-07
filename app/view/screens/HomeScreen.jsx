@@ -6,8 +6,12 @@ import * as Font from 'expo-font';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { supabase } from '../lib/supabase'; // ← IMPORTANTE
 
-export default function HomeScreen() {
-  const navigation = useNavigation();
+export default function HomeScreen({navigation}) {
+  const handleStartNow = () => {
+    // Ahora navegamos explícitamente usando la prop `navigation`
+    navigation.navigate('RoleTabs');
+  };
+  
   const [fontsLoaded, setFontsLoaded] = useState(false);
 
   useEffect(() => {
@@ -44,7 +48,7 @@ export default function HomeScreen() {
             <Text style={styles.subtitle}>Rodamos juntos, cuidamos juntos.</Text>
             <TouchableOpacity
               style={styles.button}
-              onPress={() => navigation.navigate('Login')}
+              onPress={handleStartNow}
             >
               <Text style={styles.buttonText}>Tu ruta segura empieza aquí</Text>
             </TouchableOpacity>
