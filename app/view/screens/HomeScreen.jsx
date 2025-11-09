@@ -1,14 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ImageBackground, TouchableOpacity, Image } from 'react-native';
 import { COLORS } from '../constants/colors';
-import { useNavigation } from '@react-navigation/native';
 import * as Font from 'expo-font';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { supabase } from '../lib/supabase'; // ← IMPORTANTE
 
 export default function HomeScreen({navigation}) {
   const handleStartNow = () => {
-    // Ahora navegamos explícitamente usando la prop `navigation`
     navigation.navigate('RoleTabs');
   };
   
@@ -27,7 +25,6 @@ export default function HomeScreen({navigation}) {
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
-    // No necesitas navegar, el stack se actualizará solo por el contexto de Auth
   };
 
   return (

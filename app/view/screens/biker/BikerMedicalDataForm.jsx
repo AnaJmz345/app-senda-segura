@@ -1,13 +1,22 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import React  ,{useState}from 'react';
+import { View, Text, StyleSheet, TouchableOpacity,ScrollView, TextInput } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
+import { Picker } from '@react-native-picker/picker'; 
 
-export default function BikerMedicalDataForm() {
-  const navigation = useNavigation();
+export default function BikerMedicalDataForm({navigation}) {
+  const [form, setForm] = useState({
+    edad: '',
+    tipoSangre: 'O+',
+    alergias: '',
+    padecimientos: '',
+    medicamentos: '',
+    contactoCel: '',
+    contactoParentesco: ''
+  });
+
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       {/* Botón arriba */}
       <View style={styles.backButtonContainer}>
         <TouchableOpacity style={styles.button} onPress={() => navigation.goBack()}>
@@ -19,7 +28,76 @@ export default function BikerMedicalDataForm() {
       <View style={styles.titleContainer}>
         <Text style={styles.title}>Datos Médicos</Text>
       </View>
-    </View>
+      <View style={styles.formContainer}>
+
+        <Text style={styles.label}>Edad</Text>
+        <TextInput
+          style={styles.input}
+          keyboardType="numeric"
+          value={form.edad}
+          onChangeText={(text) => setForm({ ...form, edad: text })}
+        />
+
+        <Text style={styles.label}>Tipo de sangre</Text>
+        <View style={styles.pickerContainer}>
+          <Picker
+            selectedValue={form.tipoSangre}
+            onValueChange={(value) => setForm({ ...form, tipoSangre: value })}
+            style={styles.picker}
+          >
+            <Picker.Item label="O +" value="O+" />
+            <Picker.Item label="O -" value="O-" />
+            <Picker.Item label="A +" value="A+" />
+            <Picker.Item label="A -" value="A-" />
+            <Picker.Item label="B +" value="B+" />
+            <Picker.Item label="B -" value="B-" />
+            <Picker.Item label="AB +" value="AB+" />
+            <Picker.Item label="AB -" value="AB-" />
+          </Picker>
+        </View>
+
+        <Text style={styles.label}>Alergias</Text>
+        <TextInput
+          style={styles.input}
+          value={form.alergias}
+          onChangeText={(text) => setForm({ ...form, alergias: text })}
+        />
+
+        <Text style={styles.label}>Padecimientos crónicos</Text>
+        <TextInput
+          style={styles.input}
+          value={form.padecimientos}
+          onChangeText={(text) => setForm({ ...form, padecimientos: text })}
+        />
+
+        <Text style={styles.label}>Medicamentos actuales</Text>
+        <TextInput
+          style={styles.input}
+          value={form.medicamentos}
+          onChangeText={(text) => setForm({ ...form, medicamentos: text })}
+        />
+
+        <Text style={styles.label}>Contacto de emergencia (cel.)</Text>
+        <TextInput
+          style={styles.input}
+          keyboardType="phone-pad"
+          value={form.contactoCel}
+          onChangeText={(text) => setForm({ ...form, contactoCel: text })}
+        />
+
+        <Text style={styles.label}>Contacto de emergencia (parentesco)</Text>
+        <TextInput
+          style={styles.input}
+          value={form.contactoParentesco}
+          onChangeText={(text) => setForm({ ...form, contactoParentesco: text })}
+        />
+      </View>
+
+      {/* Botón guardar */}
+      <TouchableOpacity style={styles.saveButton}>
+        <Text style={styles.saveButtonText}>Guardar cambios</Text>
+      </TouchableOpacity>
+    </ScrollView>
   );
 }
 
@@ -54,5 +132,40 @@ const styles = StyleSheet.create({
     fontSize: 22, 
     fontWeight: '600',
     color: 'black',
+  },
+  formContainer: {
+    margin: 30,
+    
+  },
+  label: {
+    fontSize: 15,
+    color: '#000',
+    marginBottom: 6,
+  },
+  input: {
+    backgroundColor: '#E8E5E1',
+    borderRadius: 8,
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    marginBottom: 18,
+  },
+  pickerContainer: {
+    backgroundColor: '#E8E5E1',
+    borderRadius: 8,
+    marginBottom: 18,
+  },
+  picker: {
+    height: 50,
+    width: '100%',
+  },
+  saveButton: {
+    backgroundColor: 'transparent',
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  saveButtonText: {
+    color: '#D19761',
+    fontWeight: '700',
+    fontSize: 16,
   },
 });
