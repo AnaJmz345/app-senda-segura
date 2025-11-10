@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ImageBackground, TouchableOpacity, Image } from 'react-native';
 import { COLORS } from '../constants/colors';
-import { useNavigation } from '@react-navigation/native';
 import * as Font from 'expo-font';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { supabase } from '../lib/supabase'; // ← IMPORTANTE
 
-export default function HomeScreen() {
-  const navigation = useNavigation();
+export default function HomeScreen({navigation}) {
+  const handleStartNow = () => {
+    navigation.navigate('RoleTabs');
+  };
+  
   const [fontsLoaded, setFontsLoaded] = useState(false);
 
   useEffect(() => {
@@ -23,7 +25,6 @@ export default function HomeScreen() {
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
-    // No necesitas navegar, el stack se actualizará solo por el contexto de Auth
   };
 
   return (
@@ -44,7 +45,7 @@ export default function HomeScreen() {
             <Text style={styles.subtitle}>Rodamos juntos, cuidamos juntos.</Text>
             <TouchableOpacity
               style={styles.button}
-              onPress={() => navigation.navigate('Login')}
+              onPress={handleStartNow}
             >
               <Text style={styles.buttonText}>Tu ruta segura empieza aquí</Text>
             </TouchableOpacity>
@@ -75,7 +76,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     shadowColor: '#000', shadowOpacity: 0.21, shadowRadius: 18, elevation: 9,
   },
-  logoImage: { width: 110, height: 110, marginBottom: 16 },
+  logoImage: { width: 190, height: 190, marginBottom: 16 },
   title: {
     fontSize: 40,
     color: COLORS.white,
