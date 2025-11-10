@@ -9,7 +9,7 @@ export default function AdminMapScreen({ navigation }) {
 
       <ScrollView contentContainerStyle={styles.content}>
         <TopMenu navigation ={navigation}></TopMenu>
-        
+        <Text>SOY UN MAPA</Text>
       </ScrollView>
     </View>
   );

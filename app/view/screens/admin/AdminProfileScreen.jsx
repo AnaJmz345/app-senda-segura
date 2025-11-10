@@ -9,6 +9,7 @@ export default function AdminProfileScreen({ navigation }) {
 
       <ScrollView contentContainerStyle={styles.content}>
         <TopMenu navigation ={navigation}></TopMenu>
+        <Text>Soy un perfil de admin</Text>
         
       </ScrollView>
     </View>
