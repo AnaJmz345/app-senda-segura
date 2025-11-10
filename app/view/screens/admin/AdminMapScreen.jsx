@@ -9,8 +9,18 @@ export default function AdminMapScreen({ navigation }) {
 
       <ScrollView contentContainerStyle={styles.content}>
         <TopMenu navigation ={navigation}></TopMenu>
-        
+        <Text>SOY UN MAPA</Text>
       </ScrollView>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#F8F8F8',
+  },
+  content: {
+    flexGrow: 1,
+  },
+});

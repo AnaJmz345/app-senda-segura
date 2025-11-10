@@ -2,17 +2,30 @@ import React  ,{useState}from 'react';
 import { View, Text, StyleSheet, TouchableOpacity,ScrollView, TextInput } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Picker } from '@react-native-picker/picker'; 
+import { useAuth } from '../../context/AuthContext';
+import { MedicalDataController } from '../../../controllers/MedicalDataController';
 
 export default function BikerMedicalDataForm({navigation}) {
+  const { user } = useAuth();
+ 
   const [form, setForm] = useState({
-    edad: '',
-    tipoSangre: 'O+',
-    alergias: '',
-    padecimientos: '',
-    medicamentos: '',
-    contactoCel: '',
-    contactoParentesco: ''
+    age: '',
+    blood_type: 'O+',
+    allergies: '',
+    conditions: '',
+    medications: '',
+    emergency_contact_relation: '',
+    emergency_contact_phone: ''
   });
+
+  const handleSave = async () => {
+    try {
+      await MedicalDataController.saveMedicalData(user.id, form);
+      Alert.alert('Datos guardados correctamente');
+    } catch (error) {
+      Alert.alert('Error', error.message);
+    }
+  };
 
 
   return (
@@ -34,15 +47,15 @@ export default function BikerMedicalDataForm({navigation}) {
         <TextInput
           style={styles.input}
           keyboardType="numeric"
-          value={form.edad}
-          onChangeText={(text) => setForm({ ...form, edad: text })}
+          value={form.age}
+          onChangeText={(text) => setForm({ ...form, age: text })}
         />
 
         <Text style={styles.label}>Tipo de sangre</Text>
         <View style={styles.pickerContainer}>
           <Picker
-            selectedValue={form.tipoSangre}
-            onValueChange={(value) => setForm({ ...form, tipoSangre: value })}
+            selectedValue={form.blood_type}
+            onValueChange={(value) => setForm({ ...form, blood_type: value })}
             style={styles.picker}
           >
             <Picker.Item label="O +" value="O+" />
@@ -59,42 +72,42 @@ export default function BikerMedicalDataForm({navigation}) {
         <Text style={styles.label}>Alergias</Text>
         <TextInput
           style={styles.input}
-          value={form.alergias}
-          onChangeText={(text) => setForm({ ...form, alergias: text })}
+          value={form.allergies}
+          onChangeText={(text) => setForm({ ...form, allergies: text })}
         />
 
         <Text style={styles.label}>Padecimientos crónicos</Text>
         <TextInput
           style={styles.input}
-          value={form.padecimientos}
-          onChangeText={(text) => setForm({ ...form, padecimientos: text })}
+          value={form.conditions}
+          onChangeText={(text) => setForm({ ...form, conditions: text })}
         />
 
         <Text style={styles.label}>Medicamentos actuales</Text>
         <TextInput
           style={styles.input}
-          value={form.medicamentos}
-          onChangeText={(text) => setForm({ ...form, medicamentos: text })}
+          value={form.medications}
+          onChangeText={(text) => setForm({ ...form, medications: text })}
         />
 
         <Text style={styles.label}>Contacto de emergencia (cel.)</Text>
         <TextInput
           style={styles.input}
           keyboardType="phone-pad"
-          value={form.contactoCel}
-          onChangeText={(text) => setForm({ ...form, contactoCel: text })}
+          value={form.emergency_contact_phone}
+          onChangeText={(text) => setForm({ ...form, emergency_contact_phone: text })}
         />
 
         <Text style={styles.label}>Contacto de emergencia (parentesco)</Text>
         <TextInput
           style={styles.input}
-          value={form.contactoParentesco}
-          onChangeText={(text) => setForm({ ...form, contactoParentesco: text })}
+          value={form.emergency_contact_relation}
+          onChangeText={(text) => setForm({ ...form, emergency_contact_relation: text })}
         />
       </View>
 
       {/* Botón guardar */}
-      <TouchableOpacity style={styles.saveButton}>
+      <TouchableOpacity style={styles.saveButton}  onPress={handleSave}>
         <Text style={styles.saveButtonText}>Guardar cambios</Text>
       </TouchableOpacity>
     </ScrollView>

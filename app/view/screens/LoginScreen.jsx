@@ -1,5 +1,17 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ImageBackground, Image, KeyboardAvoidingView, Platform, Alert } from 'react-native';
+import { 
+  View, 
+  Text, 
+  TextInput, 
+  TouchableOpacity, 
+  StyleSheet, 
+  ImageBackground, 
+  Image, 
+  KeyboardAvoidingView, 
+  Platform, 
+  Alert, 
+  ActivityIndicator 
+} from 'react-native';
 import { COLORS } from '../constants/colors';
 import { useNavigation } from '@react-navigation/native';
 import { supabase } from '../lib/supabase';
@@ -9,6 +21,7 @@ export default function LoginScreen() {
   const navigation = useNavigation();
   const [email, setEmail] = useState('');
   const [pwd, setPwd] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const handleLogin = async () => {
     if (!email || !pwd) {
@@ -16,37 +29,106 @@ export default function LoginScreen() {
       return;
     }
     try {
+      setLoading(true);
       const { data, error } = await supabase.auth.signInWithPassword({ email, password: pwd });
       if (error) throw error;
-      Alert.alert('¡Bienvenido!', 'Has iniciado sesión correctamente.', [
-        { text: 'OK', onPress: () => navigation.navigate('Home') }
-      ]);
+
+      // 🔹 Obtener datos del usuario autenticado
+      const user = data?.user;
+      if (!user) throw new Error('No se pudo obtener el usuario');
+
+      // 🔹 Consultar el rol desde la tabla profiles
+      const { data: profile, error: profileError } = await supabase
+        .from('profiles')
+        .select('display_name, role')
+        .eq('id', user.id)
+        .single();
+
+      if (profileError) throw profileError;
+
+      // 🔹 Mostrar alerta personalizada según rol
+      const nombre = profile?.display_name || 'usuario';
+      const rol = profile?.role || 'biker';
+      const rolTexto = 
+        rol === 'paramedic'
+          ? 'Paramédico'
+          : rol === 'admin'
+          ? 'Administrador'
+          : 'Ciclista';
+
+      Alert.alert('¡Bienvenido!', `Hola ${nombre}, tu rol es ${rolTexto}.`);
+
     } catch (e) {
       Alert.alert('Error en inicio de sesión', e.message ?? 'Revisa tus datos');
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <ImageBackground source={require('../../../assets/bosqueprimavera2.jpg')} style={{ flex: 1 }} blurRadius={6}>
+    <ImageBackground 
+      source={require('../../../assets/bosqueprimavera2.jpg')} 
+      style={styles.background}
+    >
       <SafeAreaView style={{ flex: 1 }}>
-        <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1 }}>
-          <View style={styles.card}>
-            <Image source={require('../../../assets/logo_SendaSegura.png')} style={styles.logoImage} resizeMode="contain" />
+        <KeyboardAvoidingView 
+          behavior={Platform.OS === "ios" ? "padding" : "height"} 
+          style={{ flex: 1, justifyContent: 'center' }}
+        >
+          <View style={styles.container}>
+            <Image 
+              source={require('../../../assets/logo_SendaSegura.png')} 
+              style={styles.logoImage} 
+              resizeMode="contain" 
+            />
+
             <Text style={styles.title}>Inicio de sesión</Text>
             <Text style={styles.subtitle}>Bienvenido de vuelta</Text>
-            <TextInput placeholder="Email" style={styles.input} placeholderTextColor="#ccc"
-              value={email} onChangeText={setEmail} autoCapitalize="none" keyboardType="email-address" />
-            <TextInput placeholder="Contraseña" style={styles.input} placeholderTextColor="#ccc"
-              value={pwd} onChangeText={setPwd} secureTextEntry />
-            <TouchableOpacity style={styles.button} onPress={handleLogin}>
-              <Text style={styles.buttonText}>Iniciar sesión</Text>
+
+            <TextInput
+              placeholder="Email"
+              style={styles.input}
+              placeholderTextColor="#ccc"
+              value={email}
+              onChangeText={setEmail}
+              autoCapitalize="none"
+              keyboardType="email-address"
+            />
+            <TextInput
+              placeholder="Contraseña"
+              style={styles.input}
+              placeholderTextColor="#ccc"
+              value={pwd}
+              onChangeText={setPwd}
+              secureTextEntry
+            />
+
+            <TouchableOpacity 
+              style={styles.button} 
+              onPress={handleLogin} 
+              disabled={loading}
+            >
+              {loading ? (
+                <ActivityIndicator color="#fff" />
+              ) : (
+                <Text style={styles.buttonText}>Iniciar sesión</Text>
+              )}
             </TouchableOpacity>
-            <View style={styles.separator}/>
+
+            <View style={styles.separator} />
             <Text style={styles.iniciarCon}>Iniciar sesión con</Text>
-            <Image source={require('../../../assets/google_g_logo.png')} style={styles.googleLogo} resizeMode="contain" />
+            <Image 
+              source={require('../../../assets/google_g_logo.png')} 
+              style={styles.googleLogo} 
+              resizeMode="contain" 
+            />
+
             <Text style={styles.bottomText}>
               ¿No tienes una cuenta?{' '}
-              <Text style={styles.link} onPress={() => navigation.navigate('Register')}>
+              <Text 
+                style={styles.link} 
+                onPress={() => navigation.navigate('Register')}
+              >
                 Regístrate aquí.
               </Text>
             </Text>
@@ -58,75 +140,81 @@ export default function LoginScreen() {
 }
 
 const styles = StyleSheet.create({
-  card: {
-    backgroundColor: COLORS.darkGreen,
-    borderRadius: 36,
-    padding: 28,
-    width: 350,
-    alignSelf: 'center',
-    alignItems: 'center',
-    shadowColor: '#000', shadowOpacity: 0.18, shadowRadius: 14, elevation: 8,
-    marginTop: 32,
-    marginBottom: 26,
+  background: { 
+    flex: 1, 
+    justifyContent: 'center' 
+  },
+  container: { 
+    backgroundColor: COLORS.darkGreen, 
+    margin: 20, 
+    borderRadius: 20, 
+    padding: 25, 
+    alignItems: 'center' 
   },
   logoImage: {
-    width: 86,
-    height: 86,
-    marginTop: -52,
-    marginBottom: 0,
+    width: 190,
+    height: 190,
+    marginTop: -40,
+    marginBottom: -25,
     alignSelf: 'center',
   },
-  title: {
-    fontSize: 29,
-    color: COLORS.white,
-    textAlign: 'center',
+  title: { 
+    color: COLORS.white, 
+    fontSize: 28, 
+    textAlign: 'center', 
     fontWeight: 'bold',
-    marginTop: -10,
-    marginBottom: 2,
+    marginTop: 5
   },
-  subtitle: {
-    color: COLORS.lightGreen,
-    textAlign: 'center',
-    marginBottom: 13,
-    fontSize: 15,
+  subtitle: { 
+    color: COLORS.lightGreen, 
+    textAlign: 'center', 
+    marginBottom: 20 
   },
-  input: {
-    backgroundColor: COLORS.white,
-    borderRadius: 12,
-    padding: 12,
-    marginVertical: 6,
-    width: 245,
-    fontSize: 15,
-    color: COLORS.darkGreen,
+  input: { 
+    backgroundColor: COLORS.white, 
+    borderRadius: 10, 
+    padding: 12, 
+    marginVertical: 10, 
+    width: 250,
+    fontSize: 15, 
+    color: COLORS.darkGreen
   },
-  button: {
-    backgroundColor: COLORS.mediumGreen,
-    padding: 15,
-    borderRadius: 13,
-    marginTop: 13,
-    width: 220,
+  button: { 
+    backgroundColor: COLORS.mediumGreen, 
+    padding: 15, 
+    borderRadius: 10, 
+    marginTop: 10, 
+    width: 220 
   },
-  buttonText: { color: COLORS.white, textAlign: 'center', fontWeight: 'bold', fontSize: 16 },
-  separator: {
-    marginTop: 18,
-    marginBottom: 7,
-    borderBottomColor: '#fff',
-    borderBottomWidth: 1,
-    alignSelf: 'stretch',
-    width: 200,
-    opacity: 0.37,
+  buttonText: { 
+    color: COLORS.white, 
+    textAlign: 'center', 
+    fontWeight: 'bold' 
   },
-  iniciarCon: {
-    color: COLORS.lightGreen,
-    fontSize: 14,
-    marginBottom: 0,
-    marginTop: 0,
+  separator: { 
+    marginTop: 18, 
+    marginBottom: 7, 
+    borderBottomColor: '#fff', 
+    borderBottomWidth: 1, 
+    width: 200, 
+    opacity: 0.37 
   },
-  googleLogo: {
-    width: 39,
-    height: 39,
-    marginVertical: 5,
+  iniciarCon: { 
+    color: COLORS.lightGreen, 
+    fontSize: 14 
   },
-  bottomText: { color: COLORS.white, marginTop: 12, textAlign: 'center', fontSize: 13 },
-  link: { color: COLORS.lightGreen, textDecorationLine: 'underline', fontWeight: 'bold' },
+  googleLogo: { 
+    width: 39, 
+    height: 39, 
+    marginVertical: 5 
+  },
+  bottomText: { 
+    color: COLORS.white, 
+    marginTop: 15, 
+    textAlign: 'center' 
+  },
+  link: { 
+    color: COLORS.lightGreen, 
+    textDecorationLine: 'underline' 
+  },
 });

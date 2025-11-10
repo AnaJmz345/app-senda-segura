@@ -7,12 +7,18 @@ export default function TopMenu({navigation}) {
   
   const route = useRoute();
   const { profile } = useAuth(); // Obtener el perfil del usuario autenticado
+ 
+  console.log('🧩 Perfil cargado:', profile);
 
   // Verificar el rol del usuario y adaptar el menú
   const isBiker = profile?.role === 'biker';
   const isParamedic = profile?.role === 'paramedic';
   const isAdmin = profile?.role === 'admin';
-  
+  if (!profile) {
+    console.log('Profile aún no cargado, no se renderiza menú');
+    return null;
+  }
+
 
   return (
     <View style={styles.header}>
