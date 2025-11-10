@@ -9,7 +9,7 @@ export default function TopMenu({navigation}) {
   const { profile } = useAuth(); // Obtener el perfil del usuario autenticado
 
   // Verificar el rol del usuario y adaptar el menú
-  const isBiker =true;
+  const isBiker = profile?.role === 'biker';
   const isParamedic = profile?.role === 'paramedic';
   const isAdmin = profile?.role === 'admin';
   
