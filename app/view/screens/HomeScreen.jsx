@@ -76,7 +76,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     shadowColor: '#000', shadowOpacity: 0.21, shadowRadius: 18, elevation: 9,
   },
-  logoImage: { width: 110, height: 110, marginBottom: 16 },
+  logoImage: { width: 190, height: 190, marginBottom: 16 },
   title: {
     fontSize: 40,
     color: COLORS.white,

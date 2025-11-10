@@ -9,8 +9,19 @@ export default function AdminProfileScreen({ navigation }) {
 
       <ScrollView contentContainerStyle={styles.content}>
         <TopMenu navigation ={navigation}></TopMenu>
+        <Text>Soy un perfil de admin</Text>
         
       </ScrollView>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#F8F8F8',
+  },
+  content: {
+    flexGrow: 1,
+  },
+});
