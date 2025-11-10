@@ -13,10 +13,7 @@ import HomeScreen from '../screens/HomeScreen';
 import AdminTabNavigator from './AdminTabNavigator'; //Tabs específicas para admin
 import BikerTabNavigator from './BikerTabNavigator'; // Tabs específicos para bikers
 import ParamedicTabNavigator from './ParamedicTabNavigator'; // Tabs específicos para paramédicos
-// TODO: importa tus stacks por rol si los tienes
-// import BikerStack from '../screens/biker/BikerStack';
-// import ParamedicStack from '../screens/paramedic/ParamedicStack';
-// import AdminStack from '../screens/admin/AdminStack';
+
 
 const Stack = createNativeStackNavigator();
 
@@ -34,7 +31,7 @@ export default function AppNavigator() {
           <>
             <Stack.Screen name="Login" component={LoginScreen} />
             <Stack.Screen name="Register" component={RegisterScreen} />
-           
+    
           </>
         ) : (
           <>
