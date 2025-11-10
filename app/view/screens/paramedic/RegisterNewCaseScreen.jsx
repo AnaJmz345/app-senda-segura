@@ -1,18 +1,27 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, ScrollView, SafeAreaView } from 'react-native';
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, ScrollView, SafeAreaView, Alert, ActivityIndicator } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { COLORS } from '../../constants/colors';
+import { useAuth } from '../../context/AuthContext';
+import { EmergencyCaseController } from '../../../controllers/EmergencyCaseController';
 
-const RegisterNewCaseScreen = () => {
-  const [bikerName, setBikerName] = useState('Jorge Suárez');
-  const [date, setDate] = useState('15/08/2025');
-  const [location, setLocation] = useState('-15.26598, 65.2867');
+const RegisterNewCaseScreen = ({ navigation }) => {
+  const { user } = useAuth();
+  const [bikerName, setBikerName] = useState('');
+  const [date, setDate] = useState('');
+  const [location, setLocation] = useState('');
   const [injuryType, setInjuryType] = useState('Fractura');
   const [severity, setSeverity] = useState('Moderada');
-  const [injuryDescription, setInjuryDescription] = useState('Fractura no expuesta de la clavicula izquierda...');
+  const [injuryDescription, setInjuryDescription] = useState('');
   const [firstAidMaterial, setFirstAidMaterial] = useState('Alcohol desinfectante');
+  const [loading, setLoading] = useState(false);
 
-  const handleRegister = () => {
+  const handleRegister = async () => {
+    if (!user?.id) {
+      Alert.alert('Error', 'No se pudo identificar al usuario. Por favor, inicia sesión nuevamente.');
+      return;
+    }
+
     const newCase = {
       bikerName,
       date,
@@ -22,8 +31,41 @@ const RegisterNewCaseScreen = () => {
       injuryDescription,
       firstAidMaterial,
     };
-    console.log('Registering new case:', newCase);
-    // this is a placeholder for the moment, need to send it to backend.
+
+    try {
+      setLoading(true);
+      await EmergencyCaseController.createCase(user.id, newCase);
+      
+      Alert.alert(
+        'Éxito',
+        'El caso ha sido registrado exitosamente.',
+        [
+          {
+            text: 'OK',
+            onPress: () => {
+              // Clear form
+              setBikerName('');
+              setDate('');
+              setLocation('');
+              setInjuryDescription('');
+              setInjuryType('Fractura');
+              setSeverity('Moderada');
+              setFirstAidMaterial('Alcohol desinfectante');
+              
+              // Navigate back if navigation is available
+              if (navigation?.goBack) {
+                navigation.goBack();
+              }
+            }
+          }
+        ]
+      );
+    } catch (error) {
+      console.error('Error registering case:', error);
+      Alert.alert('Error', error.message || 'No se pudo registrar el caso. Por favor, intenta nuevamente.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -104,8 +146,16 @@ const RegisterNewCaseScreen = () => {
           </Picker>
         </View>
 
-        <TouchableOpacity style={styles.button} onPress={handleRegister}>
-          <Text style={styles.buttonText}>Registrar caso nuevo</Text>
+        <TouchableOpacity 
+          style={[styles.button, loading && styles.buttonDisabled]} 
+          onPress={handleRegister}
+          disabled={loading}
+        >
+          {loading ? (
+            <ActivityIndicator color={COLORS.white} />
+          ) : (
+            <Text style={styles.buttonText}>Registrar caso nuevo</Text>
+          )}
         </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>
@@ -164,6 +214,10 @@ const styles = StyleSheet.create({
     color: COLORS.white,
     fontSize: 18,
     fontWeight: 'bold',
+  },
+  buttonDisabled: {
+    backgroundColor: COLORS.lightGreen,
+    opacity: 0.7,
   },
   pickerContainer: {
     backgroundColor: COLORS.white,
