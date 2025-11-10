@@ -20,21 +20,21 @@ export function AuthProvider({ children }) {
     })();
 
     const { data: sub } = supabase.auth.onAuthStateChange(async (event, newSession) => {
-  console.log('🧩 Auth event:', event);
-  setSession(newSession);
+  
+      setSession(newSession);
 
-  if (event === 'SIGNED_IN' && newSession?.user?.id) {
-    // Espera un pequeño delay para asegurar que el user.id esté disponible
-    setTimeout(async () => {
-      console.log('🔁 Cargando perfil tras login:', newSession.user.id);
-      await loadProfile(newSession.user.id);
-    }, 400);
-  } else if (newSession?.user?.id) {
-    await loadProfile(newSession.user.id);
-  } else {
-    setProfile(null);
-  }
-});
+      if (event === 'SIGNED_IN' && newSession?.user?.id) {
+        // Espera un pequeño delay para asegurar que el user.id esté disponible
+        setTimeout(async () => {
+          console.log('Cargando perfil tras login:', newSession.user.id);
+          await loadProfile(newSession.user.id);
+        }, 400);
+      } else if (newSession?.user?.id) {
+        await loadProfile(newSession.user.id);
+      } else {
+        setProfile(null);
+      }
+    });
 
 
     return () => sub.subscription.unsubscribe();
