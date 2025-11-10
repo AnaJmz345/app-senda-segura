@@ -18,9 +18,10 @@ export default function LoginScreen() {
     try {
       const { data, error } = await supabase.auth.signInWithPassword({ email, password: pwd });
       if (error) throw error;
-      Alert.alert('¡Bienvenido!', 'Has iniciado sesión correctamente.', [
+      /*Alert.alert('¡Bienvenido!', 'Has iniciado sesión correctamente.', [
         { text: 'OK', onPress: () => navigation.navigate('Home') }
-      ]);
+      ]);*/
+      Alert.alert('¡Bienvenido!', 'Has iniciado sesión correctamente.');
     } catch (e) {
       Alert.alert('Error en inicio de sesión', e.message ?? 'Revisa tus datos');
     }

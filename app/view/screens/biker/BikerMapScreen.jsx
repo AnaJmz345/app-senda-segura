@@ -3,12 +3,12 @@ import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView } from 'rea
 
 import { Ionicons, FontAwesome5 } from '@expo/vector-icons';
 import TopMenu from '../../components/TopMenu'
-export default function BikerMapScreen() {
+export default function BikerMapScreen({ navigation }) {
   return (
     <View style={styles.container}>
 
       <ScrollView contentContainerStyle={styles.content}>
-        <TopMenu />
+        <TopMenu navigation ={navigation}></TopMenu>
         
       </ScrollView>
     </View>

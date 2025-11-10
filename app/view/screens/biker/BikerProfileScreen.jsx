@@ -3,14 +3,17 @@ import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView } from 'rea
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons, FontAwesome5 } from '@expo/vector-icons';
 import TopMenu from '../../components/TopMenu'
-import { useNavigation } from '@react-navigation/native';
+import { useAuth } from '../../context/AuthContext'; 
 
-export default function ProfileScreen() {
-    const navigation = useNavigation();
+export default function BikerProfileScreen({navigation}) {
+  const {signOut} = useAuth();
+  const handleLogout = async () => {
+    await signOut();
+  };
+
   return (
-    
       <ScrollView contentContainerStyle={styles.content}>
-        <TopMenu />
+        <TopMenu navigation ={navigation}></TopMenu>
         {/* Imagen y nombre de perfil */}
         <View style={styles.profileSection}>
           <Image
@@ -21,7 +24,7 @@ export default function ProfileScreen() {
         </View>
 
         <View style={styles.options}>
-          <TouchableOpacity style={styles.optionButton}>
+          <TouchableOpacity style={styles.optionButton} onPress={() => navigation.navigate('EditBikerProfile')}>
             <Ionicons name="person-outline" size={24} color="black" />
             <Text style={styles.optionText}>Editar perfil</Text>
           </TouchableOpacity>
@@ -31,14 +34,14 @@ export default function ProfileScreen() {
             <Text style={styles.optionText}>Agregar datos médicos</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.optionButton}>
+          <TouchableOpacity style={styles.optionButton} onPress={() => navigation.navigate('EmergencyContacts')}>
             <FontAwesome5 name="ambulance" size={22} color="black" />
             <Text style={styles.optionText}>Contactos de emergencia</Text>
           </TouchableOpacity>
         </View>
 
         {/* Botón cerrar sesión */}
-        <TouchableOpacity style={styles.logoutButton}>
+        <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
           <Text style={styles.logoutText}>Cerrar sesión</Text>
         </TouchableOpacity>
       </ScrollView>
