@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Image, ImageBackground } from 'react-native';
 import { COLORS } from '../constants/colors';
-import { useNavigation } from '@react-navigation/native';
 import LottieView from 'lottie-react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-export default function SuccessScreen() {
-  const navigation = useNavigation();
+export default function SuccessScreen({navigation}) {
+  
 
   return (
     <ImageBackground source={require('../../../assets/bosqueprimavera2.jpg')} style={{ flex: 1 }} blurRadius={6}>
@@ -24,7 +23,7 @@ export default function SuccessScreen() {
           />
           <TouchableOpacity
             style={styles.button}
-            onPress={() => navigation.navigate('Login')}
+            onPress={() => navigation.navigate('Home')}
           >
             <Text style={styles.buttonText}>Continuar</Text>
           </TouchableOpacity>

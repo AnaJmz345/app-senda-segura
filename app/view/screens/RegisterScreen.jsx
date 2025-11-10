@@ -26,12 +26,21 @@ export default function RegisterScreen() {
       return;
     }
     try {
-      const { error } = await supabase.auth.signUp({
+      const { data: signUpData, error } = await supabase.auth.signUp({
         email,
         password: pwd,
       });
+
       if (error) throw error;
+
+      // En la versión nueva, el user está dentro de signUpData.user
+      const userId = signUpData?.user?.id;
+      if (!userId) {
+        throw new Error('No se pudo obtener el ID del usuario.');
+      }
+      
       navigation.navigate('Success');
+      
     } catch (e) {
       Alert.alert('Error en registro: ' + (e.message ?? 'Intenta de nuevo'));
     }

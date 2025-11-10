@@ -34,10 +34,11 @@ export default function AppNavigator() {
           <>
             <Stack.Screen name="Login" component={LoginScreen} />
             <Stack.Screen name="Register" component={RegisterScreen} />
-            <Stack.Screen name="Success" component={SuccessScreen} />
+           
           </>
         ) : (
           <>
+            <Stack.Screen name="Success" component={SuccessScreen} />
             <Stack.Screen name="Home" component={HomeScreen} />
 
             {/* Cuando el usuario presiona "Ahora todo comienza" en HomeScreen, lo redirige a los tabs según su rol */}
