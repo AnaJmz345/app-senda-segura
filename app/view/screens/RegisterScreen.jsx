@@ -1,5 +1,18 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ImageBackground, Image, ScrollView, KeyboardAvoidingView, Platform, Alert } from 'react-native';
+import { 
+  View, 
+  Text, 
+  TextInput, 
+  TouchableOpacity, 
+  StyleSheet, 
+  ImageBackground, 
+  Image, 
+  ScrollView, 
+  KeyboardAvoidingView, 
+  Platform, 
+  Alert, 
+  ActivityIndicator 
+} from 'react-native';
 import { COLORS } from '../constants/colors';
 import { useNavigation } from '@react-navigation/native';
 import { supabase } from '../lib/supabase';
@@ -12,20 +25,15 @@ export default function RegisterScreen() {
   const [email, setEmail] = useState('');
   const [pwd, setPwd] = useState('');
   const [birth, setBirth] = useState('');
-
-  function toDateString(str) {
-    if (!str) return null;
-    const parts = str.split(/[\/\-]/);
-    if (parts.length !== 3) return null;
-    return `${parts[2]}-${parts[1].padStart(2,'0')}-${parts[0].padStart(2,'0')}`;
-  }
+  const [loading, setLoading] = useState(false);
 
   const handleRegister = async () => {
     if (!name || !lastName || !email || !pwd || !birth) {
-      Alert.alert('Por favor llena todos los campos');
+      Alert.alert('Faltan datos', 'Por favor llena todos los campos');
       return;
     }
     try {
+      setLoading(true);
       const { data: signUpData, error } = await supabase.auth.signUp({
         email,
         password: pwd,
@@ -33,45 +41,113 @@ export default function RegisterScreen() {
 
       if (error) throw error;
 
-      // En la versión nueva, el user está dentro de signUpData.user
       const userId = signUpData?.user?.id;
       if (!userId) {
         throw new Error('No se pudo obtener el ID del usuario.');
       }
-      
+
+      // Crea la fila en profiles (rol por defecto 'biker')
+      const display_name = `${name} ${lastName}`.trim();
+      const { error: pErr } = await supabase.from('profiles').insert({
+        id: userId,
+        display_name,
+        birthdate: birth,
+      });
+      if (pErr) throw pErr;
+
       navigation.navigate('Success');
-      
     } catch (e) {
-      Alert.alert('Error en registro: ' + (e.message ?? 'Intenta de nuevo'));
+      Alert.alert('Error en registro', e.message ?? 'Intenta de nuevo');
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <ImageBackground source={require('../../../assets/bosqueprimavera2.jpg')} style={{ flex: 1 }} blurRadius={6}>
+    <ImageBackground 
+      source={require('../../../assets/bosqueprimavera2.jpg')} 
+      style={styles.background}
+    >
       <SafeAreaView style={{ flex: 1 }}>
-        <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1 }}>
-          <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
-            <View style={styles.card}>
-              <Image source={require('../../../assets/logo_SendaSegura.png')} style={styles.logoImage} resizeMode="contain" />
+        <KeyboardAvoidingView 
+          behavior={Platform.OS === "ios" ? "padding" : "height"} 
+          style={{ flex: 1, justifyContent: 'center' }}
+        >
+          <ScrollView 
+            contentContainerStyle={styles.scrollContent} 
+            keyboardShouldPersistTaps="handled"
+          >
+            <View style={styles.container}>
+              <Image 
+                source={require('../../../assets/logo_SendaSegura.png')} 
+                style={styles.logoImage} 
+                resizeMode="contain" 
+              />
               <Text style={styles.title}>Registro</Text>
               <Text style={styles.subtitle}>Crea tu cuenta si eres un nuevo usuario</Text>
-              <TextInput placeholder="Nombre" style={styles.input} placeholderTextColor="#ccc"
-                value={name} onChangeText={setName} />
-              <TextInput placeholder="Apellido(s)" style={styles.input} placeholderTextColor="#ccc"
-                value={lastName} onChangeText={setLastName} />
-              <TextInput placeholder="Email" style={styles.input} placeholderTextColor="#ccc"
-                value={email} onChangeText={setEmail} autoCapitalize="none" keyboardType="email-address" />
-              <TextInput placeholder="Contraseña" style={styles.input} placeholderTextColor="#ccc"
-                value={pwd} onChangeText={setPwd} secureTextEntry />
-              <TextInput placeholder="Fecha de nacimiento" style={styles.input} placeholderTextColor="#ccc"
-                value={birth} onChangeText={setBirth} />
-              <TouchableOpacity style={styles.button} onPress={handleRegister}>
-                <Text style={styles.buttonText}>Registrarse</Text>
+
+              <TextInput 
+                placeholder="Nombre" 
+                value={name} 
+                onChangeText={setName} 
+                style={styles.input} 
+                placeholderTextColor="#ccc" 
+              />
+              <TextInput 
+                placeholder="Apellido(s)" 
+                value={lastName} 
+                onChangeText={setLastName} 
+                style={styles.input} 
+                placeholderTextColor="#ccc" 
+              />
+              <TextInput 
+                placeholder="Email" 
+                value={email} 
+                onChangeText={setEmail} 
+                autoCapitalize="none" 
+                keyboardType="email-address" 
+                style={styles.input} 
+                placeholderTextColor="#ccc" 
+              />
+              <TextInput 
+                placeholder="Contraseña" 
+                value={pwd} 
+                onChangeText={setPwd} 
+                secureTextEntry 
+                style={styles.input} 
+                placeholderTextColor="#ccc" 
+              />
+              <TextInput 
+                placeholder="Fecha de nacimiento" 
+                value={birth} 
+                onChangeText={setBirth} 
+                style={styles.input} 
+                placeholderTextColor="#ccc" 
+              />
+
+              <TouchableOpacity 
+                style={styles.button} 
+                onPress={handleRegister} 
+                disabled={loading}
+              >
+                {loading ? (
+                  <ActivityIndicator color="#fff" />
+                ) : (
+                  <Text style={styles.buttonText}>Registrarse</Text>
+                )}
               </TouchableOpacity>
-              <View style={styles.separator}/>
+
+              <View style={styles.separator} />
               <Text style={styles.registrateCon}>Regístrate con</Text>
-              <Image source={require('../../../assets/google_g_logo.png')} style={styles.googleLogo} resizeMode="contain" />
-              <Text style={styles.avisoText}>Al registrarte aceptas nuestro <Text style={styles.privacidadLink}>Aviso de Privacidad.</Text></Text>
+              <Image 
+                source={require('../../../assets/google_g_logo.png')} 
+                style={styles.googleLogo} 
+                resizeMode="contain" 
+              />
+              <Text style={styles.avisoText}>
+                Al registrarte aceptas nuestro{' '}
+                <Text style={styles.privacidadLink}>Aviso de Privacidad.</Text>
+              </Text>
             </View>
           </ScrollView>
         </KeyboardAvoidingView>
@@ -81,90 +157,89 @@ export default function RegisterScreen() {
 }
 
 const styles = StyleSheet.create({
-  scrollContent: {
-    flexGrow: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    minHeight: 650,
+  background: { 
+    flex: 1, 
+    justifyContent: 'center' 
   },
-  card: {
-    backgroundColor: COLORS.darkGreen,
-    borderRadius: 36,
-    padding: 28,
-    width: 350,
-    alignSelf: 'center',
-    alignItems: 'center',
-    shadowColor: '#000', shadowOpacity: 0.18, shadowRadius: 14, elevation: 8,
-    marginTop: 24,
-    marginBottom: 22,
+  scrollContent: { 
+    flexGrow: 1, 
+    justifyContent: 'center', 
+    alignItems: 'center', 
+    minHeight: 700 
+  },
+  container: { 
+    backgroundColor: COLORS.darkGreen, 
+    margin: 20, 
+    borderRadius: 20, 
+    padding: 35, 
+    alignItems: 'center' 
   },
   logoImage: {
-    width: 86,
-    height: 86,
-    marginTop: -52,
-    marginBottom: 0,
+    width: 140,
+    height: 140,
+    marginTop: -40,
+    marginBottom: -25,
     alignSelf: 'center',
   },
-  title: {
-    fontSize: 29,
-    color: COLORS.white,
-    textAlign: 'center',
+  title: { 
+    color: COLORS.white, 
+    fontSize: 28, 
+    textAlign: 'center', 
     fontWeight: 'bold',
-    marginTop: -10,
-    marginBottom: 2,
+    marginTop: 5
   },
-  subtitle: {
-    color: COLORS.lightGreen,
-    textAlign: 'center',
-    marginBottom: 14,
-    fontSize: 14,
+  subtitle: { 
+    color: COLORS.lightGreen, 
+    textAlign: 'center', 
+    marginBottom: 20 
   },
-  input: {
-    backgroundColor: COLORS.white,
-    borderRadius: 12,
-    padding: 12,
-    marginVertical: 6,
-    width: 245,
-    fontSize: 15,
-    color: COLORS.darkGreen,
+  input: { 
+    backgroundColor: COLORS.white, 
+    borderRadius: 10, 
+    padding: 12, 
+    marginVertical: 8, 
+    width: 250,
+    fontSize: 15, 
+    color: COLORS.darkGreen
   },
-  button: {
-    backgroundColor: COLORS.mediumGreen,
-    padding: 15,
-    borderRadius: 13,
-    marginTop: 14,
-    width: 220,
+  button: { 
+    backgroundColor: COLORS.mediumGreen, 
+    padding: 15, 
+    borderRadius: 10, 
+    marginTop: 10, 
+    width: 220 
   },
-  buttonText: { color: COLORS.white, textAlign: 'center', fontWeight: 'bold', fontSize: 16 },
-  separator: {
-    marginTop: 18,
-    marginBottom: 7,
-    borderBottomColor: '#fff',
-    borderBottomWidth: 1,
-    alignSelf: 'stretch',
-    width: 200,
-    opacity: 0.37,
+  buttonText: { 
+    color: COLORS.white, 
+    textAlign: 'center', 
+    fontWeight: 'bold' 
   },
-  registrateCon: {
-    color: COLORS.lightGreen,
-    fontSize: 14,
-    marginBottom: 0,
-    marginTop: 0,
+  separator: { 
+    marginTop: 18, 
+    marginBottom: 7, 
+    borderBottomColor: '#fff', 
+    borderBottomWidth: 1, 
+    width: 200, 
+    opacity: 0.37 
   },
-  googleLogo: {
-    width: 39,
-    height: 39,
-    marginVertical: 5,
+  registrateCon: { 
+    color: COLORS.lightGreen, 
+    fontSize: 14 
   },
-  avisoText: {
-    color: COLORS.white,
-    fontSize: 12,
-    marginTop: 6,
-    textAlign: 'center',
-    width: 215,
+  googleLogo: { 
+    width: 39, 
+    height: 39, 
+    marginVertical: 5 
   },
-  privacidadLink: {
-    color: COLORS.lightGreen,
-    textDecorationLine: 'underline',
+  avisoText: { 
+    color: COLORS.white, 
+    fontSize: 12, 
+    marginTop: 6, 
+    textAlign: 'center', 
+    width: 215 
   },
+  privacidadLink: { 
+    color: COLORS.lightGreen, 
+    textDecorationLine: 'underline' 
+  }
 });
