@@ -1,4 +1,4 @@
-export const supabase = {
+const supabase = {
   auth: {
     getSession: jest.fn(),
     signInWithPassword: jest.fn(),
@@ -12,4 +12,8 @@ export const supabase = {
     eq: jest.fn().mockReturnThis(),
     maybeSingle: jest.fn().mockResolvedValue({ data: null, error: null }),
   })),
+};
+
+module.exports = {
+  supabase,
 };

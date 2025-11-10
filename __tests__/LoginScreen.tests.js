@@ -1,7 +1,8 @@
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react-native';
 import LoginScreen from '../app/view/screens/LoginScreen';
-import { supabase } from '../__mocks__/supabase';
+const { supabase } = require('../__mocks__/supabase');
+
 
 jest.mock('../app/view/lib/supabase', () => require('../__mocks__/supabase'));
 jest.mock('@react-navigation/native', () => ({
