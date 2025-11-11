@@ -1,6 +1,5 @@
 
 import React from 'react';
-import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useAuth } from '../context/AuthContext';
 
@@ -27,30 +26,21 @@ export default function AppNavigator() {
   if (loading) return null;
 
   return (
-    <NavigationContainer>
-      <Stack.Navigator screenOptions={{ headerShown: false }}>
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
         {/* 🔸 Si el usuario no está autenticado */}
         {!user ? (
           <>
             <Stack.Screen name="Login" component={LoginScreen} />
             <Stack.Screen name="Register" component={RegisterScreen} />
+            <Stack.Screen name="Success" component={SuccessScreen} />
           </>
         ) : (
           <>
-            {/* 🔹 Pantallas paramédico personalizadas */}
-            <Stack.Screen name="ActiveBikers" component={ActiveBikersScreen} />
-            <Stack.Screen name="History" component={EmergencyCallsHistoryScreen} />
-
-            {/* 🔹 Home general y Success */}
-            <Stack.Screen name="Success" component={SuccessScreen} />
-            <Stack.Screen name="Home" component={HomeScreen} />
-
-            {/* 🔹 Pantalla de tabs por rol */}
+            {/* 🔹 Pantalla principal según el rol del usuario */}
             <Stack.Screen name="RoleTabs" component={RoleTabs} />
           </>
         )}
       </Stack.Navigator>
-    </NavigationContainer>
   );
 }
 
@@ -58,15 +48,20 @@ export default function AppNavigator() {
 function RoleTabs({ navigation }) {
   const { profile } = useAuth();
 
+  // Si no hay profile todavía, mostrar loading o null
   if (!profile) {
-    return <ParamedicTabNavigator navigation={navigation} />; // loading default
+    return null;
   }
 
+  // Navegar según el rol del usuario
   if (profile.role === 'biker') {
     return <BikerTabNavigator navigation={navigation} />;
   } else if (profile.role === 'paramedic') {
     return <ParamedicTabNavigator navigation={navigation} />;
-  } else {
-    return <AdminTabNavigator navigation={navigation} />; // default admin
+  } else if (profile.role === 'admin') {
+    return <AdminTabNavigator navigation={navigation} />;
   }
+
+  // Si el role no es reconocido, return null o un screen de error
+  return null;
 }
