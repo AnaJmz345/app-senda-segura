@@ -49,26 +49,15 @@ const RegisterNewCaseScreen = ({ navigation }) => {
       setLoading(true);
       await ParamedicCaseController.createCase(user.id, newCase);
       
-      Alert.alert(
-        'Éxito',
-        'El caso ha sido registrado exitosamente.',
-        [
-          {
-            text: 'OK',
-            onPress: () => {
-              // Clear form
-              setBikerName('');
-              setInjuryDescription('');
-              setInjuryType('Fractura');
-              
-              // Navigate back if navigation is available
-              if (navigation?.goBack) {
-                navigation.goBack();
-              }
-            }
-          }
-        ]
-      );
+      // Clear form
+      setBikerName('');
+      setInjuryDescription('');
+      setInjuryType('Fractura');
+      
+      // Navigate to ParamedicProfileScreen immediately
+      if (navigation) {
+        navigation.navigate('ParamedicProfileScreen');
+      }
     } catch (error) {
       console.error('Error registering case:', error);
       Alert.alert('Error', error.message || 'No se pudo registrar el caso. Por favor, intenta nuevamente.');
