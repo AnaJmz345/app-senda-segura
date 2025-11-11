@@ -3,17 +3,13 @@ import { View, Text, TextInput, StyleSheet, TouchableOpacity, ScrollView, SafeAr
 import { Picker } from '@react-native-picker/picker';
 import { COLORS } from '../../constants/colors';
 import { useAuth } from '../../context/AuthContext';
-import { EmergencyCaseController } from '../../../controllers/EmergencyCaseController';
+import { ParamedicCaseController } from '../../../controllers/ParamedicCaseController';
 
 const RegisterNewCaseScreen = ({ navigation }) => {
   const { user } = useAuth();
   const [bikerName, setBikerName] = useState('');
-  const [date, setDate] = useState('');
-  const [location, setLocation] = useState('');
   const [injuryType, setInjuryType] = useState('Fractura');
-  const [severity, setSeverity] = useState('Moderada');
   const [injuryDescription, setInjuryDescription] = useState('');
-  const [firstAidMaterial, setFirstAidMaterial] = useState('Alcohol desinfectante');
   const [loading, setLoading] = useState(false);
 
   const handleRegister = async () => {
@@ -24,17 +20,14 @@ const RegisterNewCaseScreen = ({ navigation }) => {
 
     const newCase = {
       bikerName,
-      date,
-      location,
       injuryType,
-      severity,
       injuryDescription,
-      firstAidMaterial,
+      emergencyId: null, // Por ahora null
     };
 
     try {
       setLoading(true);
-      await EmergencyCaseController.createCase(user.id, newCase);
+      await ParamedicCaseController.createCase(user.id, newCase);
       
       Alert.alert(
         'Éxito',
@@ -45,12 +38,8 @@ const RegisterNewCaseScreen = ({ navigation }) => {
             onPress: () => {
               // Clear form
               setBikerName('');
-              setDate('');
-              setLocation('');
               setInjuryDescription('');
               setInjuryType('Fractura');
-              setSeverity('Moderada');
-              setFirstAidMaterial('Alcohol desinfectante');
               
               // Navigate back if navigation is available
               if (navigation?.goBack) {
@@ -75,28 +64,15 @@ const RegisterNewCaseScreen = ({ navigation }) => {
           <Text style={styles.headerText}>Registrar caso nuevo</Text>
         </View>
         
-        <Text style={styles.label}>Nombre ciclista</Text>
+        <Text style={styles.label}>Nombre del ciclista</Text>
         <TextInput
           style={styles.input}
           value={bikerName}
           onChangeText={setBikerName}
+          placeholder="Ingrese el nombre o email del ciclista"
+          placeholderTextColor="#999"
         />
 
-        <Text style={styles.label}>Fecha</Text>
-        <TextInput
-          style={styles.input}
-          value={date}
-          onChangeText={setDate}
-        />
-
-        <Text style={styles.label}>Ubicación</Text>
-        <TextInput
-          style={styles.input}
-          value={location}
-          onChangeText={setLocation}
-        />
-
-        {/* These should be dropdown pickers */}
         <Text style={styles.label}>Tipo de lesión</Text>
         <View style={styles.pickerContainer}>
           <Picker
@@ -108,19 +84,9 @@ const RegisterNewCaseScreen = ({ navigation }) => {
             <Picker.Item label="Contusión" value="Contusión" />
             <Picker.Item label="Esguince" value="Esguince" />
             <Picker.Item label="Herida abierta" value="Herida abierta" />
-          </Picker>
-        </View>
-
-        <Text style={styles.label}>Severidad</Text>
-        <View style={styles.pickerContainer}>
-          <Picker
-            selectedValue={severity}
-            style={styles.picker}
-            onValueChange={(itemValue) => setSeverity(itemValue)}
-          >
-            <Picker.Item label="Leve" value="Leve" />
-            <Picker.Item label="Moderada" value="Moderada" />
-            <Picker.Item label="Grave" value="Grave" />
+            <Picker.Item label="Laceración" value="Laceración" />
+            <Picker.Item label="Quemadura" value="Quemadura" />
+            <Picker.Item label="Otro" value="Otro" />
           </Picker>
         </View>
 
@@ -129,22 +95,11 @@ const RegisterNewCaseScreen = ({ navigation }) => {
           style={[styles.input, styles.multilineInput]}
           value={injuryDescription}
           onChangeText={setInjuryDescription}
+          placeholder="Describa los detalles de la lesión y el tratamiento aplicado"
+          placeholderTextColor="#999"
           multiline
+          numberOfLines={4}
         />
-
-        <Text style={styles.label}>Material utilizado del kit primeros auxilios</Text>
-        <View style={styles.pickerContainer}>
-          <Picker
-            selectedValue={firstAidMaterial}
-            style={styles.picker}
-            onValueChange={(itemValue) => setFirstAidMaterial(itemValue)}
-          >
-            <Picker.Item label="Alcohol desinfectante" value="Alcohol desinfectante" />
-            <Picker.Item label="Gasas" value="Gasas" />
-            <Picker.Item label="Vendas" value="Vendas" />
-            <Picker.Item label="Analgésicos" value="Analgésicos" />
-          </Picker>
-        </View>
 
         <TouchableOpacity 
           style={[styles.button, loading && styles.buttonDisabled]} 
