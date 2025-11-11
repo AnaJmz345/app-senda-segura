@@ -19,6 +19,7 @@
     },
 
     "android": {
+      "package": "com.senda.segura",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"

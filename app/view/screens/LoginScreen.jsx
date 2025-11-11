@@ -33,11 +33,9 @@ export default function LoginScreen() {
       const { data, error } = await supabase.auth.signInWithPassword({ email, password: pwd });
       if (error) throw error;
 
-      // 🔹 Obtener datos del usuario autenticado
       const user = data?.user;
       if (!user) throw new Error('No se pudo obtener el usuario');
 
-      // 🔹 Consultar el rol desde la tabla profiles
       const { data: profile, error: profileError } = await supabase
         .from('profiles')
         .select('display_name, role')
@@ -46,7 +44,6 @@ export default function LoginScreen() {
 
       if (profileError) throw profileError;
 
-      // 🔹 Mostrar alerta personalizada según rol
       const nombre = profile?.display_name || 'usuario';
       const rol = profile?.role || 'biker';
       const rolTexto = 
@@ -57,7 +54,6 @@ export default function LoginScreen() {
           : 'Ciclista';
 
       Alert.alert('¡Bienvenido!', `Hola ${nombre}, tu rol es ${rolTexto}.`);
-
     } catch (e) {
       Alert.alert('Error en inicio de sesión', e.message ?? 'Revisa tus datos');
     } finally {
@@ -75,17 +71,19 @@ export default function LoginScreen() {
           behavior={Platform.OS === "ios" ? "padding" : "height"} 
           style={{ flex: 1, justifyContent: 'center' }}
         >
-          <View style={styles.container}>
+          <View style={styles.container} testID="login-container">
             <Image 
               source={require('../../../assets/logo_SendaSegura.png')} 
               style={styles.logoImage} 
-              resizeMode="contain" 
+              resizeMode="contain"
+              testID="logo-image"
             />
 
-            <Text style={styles.title}>Inicio de sesión</Text>
+            <Text style={styles.title} testID="login-title">Inicio de sesión</Text>
             <Text style={styles.subtitle}>Bienvenido de vuelta</Text>
 
             <TextInput
+              testID="input-email"
               placeholder="Email"
               style={styles.input}
               placeholderTextColor="#ccc"
@@ -95,6 +93,7 @@ export default function LoginScreen() {
               keyboardType="email-address"
             />
             <TextInput
+              testID="input-password"
               placeholder="Contraseña"
               style={styles.input}
               placeholderTextColor="#ccc"
@@ -104,12 +103,13 @@ export default function LoginScreen() {
             />
 
             <TouchableOpacity 
+              testID="button-login"
               style={styles.button} 
               onPress={handleLogin} 
               disabled={loading}
             >
               {loading ? (
-                <ActivityIndicator color="#fff" />
+                <ActivityIndicator color="#fff" testID="login-loading" />
               ) : (
                 <Text style={styles.buttonText}>Iniciar sesión</Text>
               )}
@@ -121,12 +121,14 @@ export default function LoginScreen() {
               source={require('../../../assets/google_g_logo.png')} 
               style={styles.googleLogo} 
               resizeMode="contain" 
+              testID="google-login"
             />
 
             <Text style={styles.bottomText}>
               ¿No tienes una cuenta?{' '}
               <Text 
                 style={styles.link} 
+                testID="link-register"
                 onPress={() => navigation.navigate('Register')}
               >
                 Regístrate aquí.

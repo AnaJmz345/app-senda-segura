@@ -1,0 +1,30 @@
+appId: com.senda.segura
+name: Login Flow
+
+---
+- launchApp
+
+# Verifica que estás en la pantalla de inicio de sesión
+- assertVisible:
+    text: "Inicio de sesión"
+
+# Rellena email
+- tapOn:
+    id: "input-email"
+- inputText: "user@test.com"
+
+# Rellena contraseña
+- tapOn:
+    id: "input-password"
+- inputText: "123456"
+
+# Oculta el teclado
+- hideKeyboard
+
+# Toca el botón de login
+- tapOn:
+    id: "button-login"
+
+# Verifica que aparezca el texto “Mapa”
+- assertVisible:
+    text: "Mapa"
