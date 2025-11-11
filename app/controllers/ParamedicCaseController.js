@@ -21,10 +21,12 @@ export const ParamedicCaseController = {
     }
 
     // Look up biker by display_name (could be email or name)
+    console.log('🔍 Buscando ciclista con nombre:', caseData.bikerName.trim());
     const biker = await ParamedicCaseModel.getBikerByDisplayName(caseData.bikerName.trim());
+    console.log('✅ Ciclista encontrado:', biker);
     
     if (!biker) {
-      throw new Error(`No se encontró un ciclista con el nombre: ${caseData.bikerName}`);
+      throw new Error(`No se encontró un ciclista con el nombre: "${caseData.bikerName}". Asegúrate de que el ciclista existe en la base de datos con ese nombre exacto.`);
     }
 
     // Structure data for database (matching paramedic_cases schema)
@@ -36,8 +38,11 @@ export const ParamedicCaseController = {
       emergency_id: caseData.emergencyId || null, // optional for now
     };
 
+    console.log('💾 Insertando caso en la base de datos:', dataToInsert);
+
     // Insert the case
     const insertedCase = await ParamedicCaseModel.insert(dataToInsert);
+    console.log('🎉 Caso insertado exitosamente:', insertedCase);
     return insertedCase;
   },
 

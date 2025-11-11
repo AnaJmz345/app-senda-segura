@@ -2,12 +2,19 @@ import { supabase } from '../view/lib/supabase';
 
 export const ParamedicCaseModel = {
   async insert(data) {
+    console.log('📤 Enviando a Supabase:', data);
     const { data: insertedData, error } = await supabase
       .from('paramedic_cases')
       .insert(data)
       .select()
       .single();
-    if (error) throw error;
+    
+    if (error) {
+      console.error('❌ Error de Supabase:', error);
+      throw new Error(`Error al insertar en la base de datos: ${error.message}`);
+    }
+    
+    console.log('✅ Datos insertados:', insertedData);
     return insertedData;
   },
 
@@ -59,15 +66,61 @@ export const ParamedicCaseModel = {
     if (error) throw error;
   },
 
-  // get biker by display_name (email or name)
+  // Get biker by display_name (email or name) - case insensitive and partial match
   async getBikerByDisplayName(displayName) {
-    const { data, error } = await supabase
+    console.log('🔎 Buscando en profiles con display_name:', displayName);
+    
+    // Try exact match first (case insensitive)
+    let { data, error } = await supabase
       .from('profiles')
       .select('id, display_name, role')
-      .eq('display_name', displayName)
+      .ilike('display_name', displayName)
       .eq('role', 'biker')
       .maybeSingle();
-    if (error) throw error;
+    
+    // If no exact match, try partial match
+    if (!data && !error) {
+      console.log('🔍 No se encontró coincidencia exacta, buscando coincidencia parcial...');
+      const { data: results, error: searchError } = await supabase
+        .from('profiles')
+        .select('id, display_name, role')
+        .ilike('display_name', `%${displayName}%`)
+        .eq('role', 'biker');
+      
+      if (searchError) {
+        console.error('❌ Error al buscar ciclista:', searchError);
+        throw searchError;
+      }
+      
+      // If multiple matches, return the first one
+      if (results && results.length > 0) {
+        data = results[0];
+        console.log(`✅ Se encontraron ${results.length} coincidencias, usando la primera`);
+      }
+    }
+    
+    if (error) {
+      console.error('❌ Error al buscar ciclista:', error);
+      throw error;
+    }
+    
+    console.log('🔍 Resultado de búsqueda:', data);
+    return data;
+  },
+
+  // Get all bikers for dropdown/selection
+  async getAllBikers() {
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('id, display_name, phone')
+      .eq('role', 'biker')
+      .order('display_name', { ascending: true });
+    
+    if (error) {
+      console.error('❌ Error al obtener ciclistas:', error);
+      throw error;
+    }
+    
     return data;
   }
 };

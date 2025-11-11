@@ -4,13 +4,33 @@ import { Picker } from '@react-native-picker/picker';
 import { COLORS } from '../../constants/colors';
 import { useAuth } from '../../context/AuthContext';
 import { ParamedicCaseController } from '../../../controllers/ParamedicCaseController';
+import { ParamedicCaseModel } from '../../../models/ParamedicCaseModel';
 
 const RegisterNewCaseScreen = ({ navigation }) => {
   const { user } = useAuth();
   const [bikerName, setBikerName] = useState('');
+  const [bikers, setBikers] = useState([]);
+  const [loadingBikers, setLoadingBikers] = useState(true);
   const [injuryType, setInjuryType] = useState('Fractura');
   const [injuryDescription, setInjuryDescription] = useState('');
   const [loading, setLoading] = useState(false);
+
+  // Load bikers on mount
+  React.useEffect(() => {
+    const loadBikers = async () => {
+      try {
+        const bikersList = await ParamedicCaseModel.getAllBikers();
+        setBikers(bikersList || []);
+      } catch (error) {
+        console.error('Error loading bikers:', error);
+        Alert.alert('Error', 'No se pudieron cargar los ciclistas');
+      } finally {
+        setLoadingBikers(false);
+      }
+    };
+
+    loadBikers();
+  }, []);
 
   const handleRegister = async () => {
     if (!user?.id) {
@@ -64,14 +84,29 @@ const RegisterNewCaseScreen = ({ navigation }) => {
           <Text style={styles.headerText}>Registrar caso nuevo</Text>
         </View>
         
-        <Text style={styles.label}>Nombre del ciclista</Text>
-        <TextInput
-          style={styles.input}
-          value={bikerName}
-          onChangeText={setBikerName}
-          placeholder="Ingrese el nombre o email del ciclista"
-          placeholderTextColor="#999"
-        />
+        <Text style={styles.label}>Ciclista</Text>
+        {loadingBikers ? (
+          <View style={styles.input}>
+            <ActivityIndicator size="small" color={COLORS.mediumGreen} />
+          </View>
+        ) : (
+          <View style={styles.pickerContainer}>
+            <Picker
+              selectedValue={bikerName}
+              style={styles.picker}
+              onValueChange={(itemValue) => setBikerName(itemValue)}
+            >
+              <Picker.Item label="Seleccione un ciclista" value="" />
+              {bikers.map((biker) => (
+                <Picker.Item 
+                  key={biker.id} 
+                  label={biker.display_name} 
+                  value={biker.display_name} 
+                />
+              ))}
+            </Picker>
+          </View>
+        )}
 
         <Text style={styles.label}>Tipo de lesión</Text>
         <View style={styles.pickerContainer}>
