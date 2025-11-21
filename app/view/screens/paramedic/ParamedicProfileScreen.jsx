@@ -1,11 +1,25 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView } from 'react-native';
 import { Ionicons, FontAwesome5, MaterialIcons } from '@expo/vector-icons';
 import { useAuth } from '../../context/AuthContext';
 import TopMenu from '../../components/TopMenu';
+import { executeSql } from '../../lib/sqlite';
 
 export default function ParamedicProfileScreen({ navigation }) {
-  const { signOut } = useAuth();
+  const { signOut, user } = useAuth();
+  const [profile, setProfile] = useState(null);
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const result = await executeSql('SELECT * FROM profiles WHERE id = ? LIMIT 1', [user?.id]);
+        setProfile(result.rows._array[0] || null);
+      } catch (e) {
+        setProfile(null);
+      }
+    };
+    fetchProfile();
+  }, [user]);
 
   const handleLogout = async () => {
     await signOut();
@@ -15,19 +29,17 @@ export default function ParamedicProfileScreen({ navigation }) {
     <ScrollView contentContainerStyle={styles.content}>
       <TopMenu navigation={navigation} />
 
-     
       <View style={styles.profileSection}>
         <Image
-          source={require('../../../../assets/gatitoprofile.jpeg')}
+          source={{ uri: profile?.avatar_url || require('../../../../assets/gatitoprofile.jpeg') }}
           style={styles.profileImage}
         />
-        <Text style={styles.name}>Pablo Medina</Text>
+        <Text style={styles.name}>{profile?.display_name || 'Pablo Medina'}</Text>
         <Text style={styles.subtitle}>
-          Gracias por tu servicio, Pablo. Tu ayuda es importante y marca la diferencia.
+          Gracias por tu servicio, {profile?.display_name?.split(' ')[0] || 'Paramédico'}. Tu ayuda es importante y marca la diferencia.
         </Text>
       </View>
 
-      {/* Opciones del perfil */}
       <View style={styles.options}>
         <TouchableOpacity
           style={styles.optionButton}
@@ -54,7 +66,6 @@ export default function ParamedicProfileScreen({ navigation }) {
         </TouchableOpacity>
       </View>
 
-      {/* Botón de cierre de sesión */}
       <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
         <Text style={styles.logoutText}>Cerrar sesión</Text>
       </TouchableOpacity>
