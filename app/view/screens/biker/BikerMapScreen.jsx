@@ -9,18 +9,34 @@ export default function BikerMapScreen({ navigation }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Leer rutas activas de SQLite
-    const fetchRoutes = async () => {
-      try {
-        const result = await executeSql('SELECT * FROM routes WHERE is_active = 1');
-        setRoutes(result.rows._array || []);
-      } catch (error) {
-        console.error('Error al leer rutas locales:', error);
+  const fetchRoutes = async () => {
+    try {
+      //intentar leer rutas desde SQLite
+      const result = await executeSql(
+        "SELECT * FROM routes WHERE is_active = 1"
+      );
+
+      //Validación segura
+      if (!result || !result.rows) {
+        console.log("Tabla routes vacía o SQLite aún no está lista");
+        setRoutes([]);
+        setLoading(false);
+        return;
       }
-      setLoading(false);
-    };
-    fetchRoutes();
-  }, []);
+
+      //Si hay rutas, asignarlas
+      setRoutes(result.rows._array || []);
+    } catch (error) {
+      //Manejo seguro del error sin crashear la app
+      console.error("Error al leer rutas locales:", error);
+      setRoutes([]);
+    }
+
+    setLoading(false);
+  };
+
+  fetchRoutes();
+}, []);
 
   return (
     <View style={styles.container}>
