@@ -4,22 +4,32 @@ import { Ionicons, FontAwesome5, MaterialIcons } from '@expo/vector-icons';
 import { useAuth } from '../../context/AuthContext';
 import TopMenu from '../../components/TopMenu';
 import { executeSql } from '../../lib/sqlite';
+import { downloadProfileFromSupabase } from "../../lib/syncProfile";
 
 export default function ParamedicProfileScreen({ navigation }) {
   const { signOut, user } = useAuth();
   const [profile, setProfile] = useState(null);
 
-  useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        const result = await executeSql('SELECT * FROM profiles WHERE id = ? LIMIT 1', [user?.id]);
-        setProfile(result.rows._array[0] || null);
-      } catch (e) {
-        setProfile(null);
-      }
-    };
-    fetchProfile();
-  }, [user]);
+ useEffect(() => {
+  const load = async () => {
+    let result = await executeSql(
+      "SELECT * FROM profiles WHERE id = ? LIMIT 1",
+      [user.id]
+    );
+
+    if (result.rows.length === 0) {
+      await downloadProfileFromSupabase(user.id);
+      result = await executeSql(
+        "SELECT * FROM profiles WHERE id = ? LIMIT 1",
+        [user.id]
+      );
+    }
+
+    setProfile(result.rows._array[0] || null);
+  };
+
+  load();
+}, [user]);
 
   const handleLogout = async () => {
     await signOut();

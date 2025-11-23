@@ -7,22 +7,26 @@ import { executeSql } from "../../lib/sqlite";
 import NetInfo from "@react-native-community/netinfo";
 import { useAuth } from "../../context/AuthContext";
 import { MedicalDataController } from "../../../controllers/MedicalDataController";
+import { loadLocalProfile } from "../../lib/syncProfile";
+import { downloadProfileFromSupabase } from "../../lib/syncProfile";
 
 export default function BikerProfileScreen({ navigation }) {
   const [profile, setProfile] = useState(null);
   const { user } = useAuth();
 
   useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        const result = await executeSql("SELECT * FROM profiles LIMIT 1");
-        setProfile(result.rows._array[0] || null);
-      } catch (e) {
-        setProfile(null);
-      }
-    };
-    fetchProfile();
-  }, []);
+  const load = async () => {
+    let local = await executeSql("SELECT * FROM profiles LIMIT 1");
+
+    if (local.rows.length === 0) {
+      await downloadProfileFromSupabase(user.id);
+      local = await executeSql("SELECT * FROM profiles LIMIT 1");
+    }
+
+    setProfile(local.rows._array[0] || null);
+  };
+  load();
+}, []);
 
   useEffect(() => {
     const syncPendingProfiles = async () => {

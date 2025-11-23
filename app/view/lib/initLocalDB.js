@@ -1,8 +1,6 @@
 import { executeSql } from "./sqlite";
 
-//inicializa todas las tablas locales necesarias
 export async function initLocalDB() {
-  // Tabla de rutas
   await executeSql(`
     CREATE TABLE IF NOT EXISTS routes (
       id TEXT PRIMARY KEY,
@@ -16,18 +14,16 @@ export async function initLocalDB() {
     );
   `);
 
-  // Tabla de perfiles de usuario
   await executeSql(`
-  CREATE TABLE IF NOT EXISTS profiles (
-    id TEXT PRIMARY KEY,
-    display_name TEXT,
-    phone TEXT,
-    avatar_url TEXT,
-    is_synced INTEGER DEFAULT 0
-  );
-`);
+    CREATE TABLE IF NOT EXISTS profiles (
+      id TEXT PRIMARY KEY,
+      display_name TEXT,
+      phone TEXT,
+      avatar_url TEXT,
+      is_synced INTEGER DEFAULT 0
+    );
+  `);
 
-  //Tabla de perfiles médicos
   await executeSql(`
     CREATE TABLE IF NOT EXISTS medical_profiles (
       user_id TEXT PRIMARY KEY,

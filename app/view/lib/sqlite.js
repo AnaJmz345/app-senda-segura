@@ -1,19 +1,15 @@
-import * as SQLite from 'expo-sqlite';
+import { SQLite } from "expo-sqlite";
 
-const db = SQLite.openDatabase('senda_segura.db');
+let dbInstance = null;
 
-//utilidad para correr queries
-export function executeSql(query, params = []) {
-  return new Promise((resolve, reject) => {
-    db.transaction(tx => {
-      tx.executeSql(
-        query,
-        params,
-        (_, result) => resolve(result),
-        (_, error) => reject(error)
-      );
-    });
-  });
+export async function getDB() {
+  if (!dbInstance) {
+    dbInstance = await SQLite.openDatabaseAsync("senda_segura.db");
+  }
+  return dbInstance;
 }
 
-export default db;
+export async function executeSql(query, params = []) {
+  const db = await getDB();
+  return db.runAsync(query, params);
+}
