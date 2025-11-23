@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import { View, Text, StyleSheet, Image, TouchableOpacity,ScrollView  } from "react-native";
+import { Ionicons, FontAwesome5 } from '@expo/vector-icons';
 import { COLORS } from "../../constants/colors";
 import TopMenu from "../../components/TopMenu";
 import { executeSql } from "../../lib/sqlite";
@@ -13,20 +13,23 @@ import { downloadProfileFromSupabase } from "../../lib/syncProfile";
 export default function BikerProfileScreen({ navigation }) {
   const [profile, setProfile] = useState(null);
   const { user } = useAuth();
+  const handleLogout = async () => {
+    await signOut();
+  };
 
   useEffect(() => {
-  const load = async () => {
-    let local = await executeSql("SELECT * FROM profiles LIMIT 1");
+    const load = async () => {
+      let local = await executeSql("SELECT * FROM profiles LIMIT 1");
 
-    if (local.rows.length === 0) {
-      await downloadProfileFromSupabase(user.id);
-      local = await executeSql("SELECT * FROM profiles LIMIT 1");
-    }
+      if (local.rows.length === 0) {
+        await downloadProfileFromSupabase(user.id);
+        local = await executeSql("SELECT * FROM profiles LIMIT 1");
+      }
 
-    setProfile(local.rows._array[0] || null);
-  };
-  load();
-}, []);
+      setProfile(local.rows._array[0] || null);
+    };
+    load();
+  }, []);
 
   useEffect(() => {
     const syncPendingProfiles = async () => {
@@ -48,9 +51,9 @@ export default function BikerProfileScreen({ navigation }) {
   }, [user]);
 
   return (
-    <View style={styles.container}>
+    <ScrollView contentContainerStyle={styles.content}>
       <TopMenu navigation={navigation} />
-      <View style={styles.header}>
+      <View style={styles.profileSection}>
         <Image
           source={{
             uri:
@@ -60,61 +63,86 @@ export default function BikerProfileScreen({ navigation }) {
           style={styles.profileImage}
         />
         <Text style={styles.name}>
-          {profile?.display_name || "Isabel Monteiro"}
-        </Text>
-        <Text style={styles.role}>Biker</Text>
-      </View>
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Contacto</Text>
-        <Text style={styles.sectionValue}>
-          {profile?.phone || "+52 443 341 7632"}
+          {profile?.display_name || "Biker"}
         </Text>
       </View>
-      <TouchableOpacity
-        style={styles.editButton}
-        onPress={() => navigation.navigate("EditBikerProfile", { profile })}
-      >
-        <Ionicons
-          name="create-outline"
-          size={18}
-          color="#fff"
-          style={{ marginRight: 7 }}
-        />
-        <Text style={styles.editButtonText}>Editar perfil</Text>
-      </TouchableOpacity>
-    </View>
+
+      <View style={styles.options}>
+          <TouchableOpacity style={styles.optionButton} onPress={() => navigation.navigate('EditBikerProfile')}>
+            <Ionicons name="person-outline" size={24} color="black" />
+            <Text style={styles.optionText}>Editar perfil</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.optionButton} onPress={() => navigation.navigate('BikerMedicalDataForm')}>
+            <FontAwesome5 name="briefcase-medical" size={22} color="black" />
+            <Text style={styles.optionText}>Agregar datos médicos</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.optionButton} onPress={() => navigation.navigate('EmergencyContacts')}>
+            <FontAwesome5 name="ambulance" size={22} color="black" />
+            <Text style={styles.optionText}>Contactos de emergencia</Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* Botón cerrar sesión */}
+        <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+          <Text style={styles.logoutText}>Cerrar sesión</Text>
+        </TouchableOpacity>
+      </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: COLORS.background },
-  header: { alignItems: "center", marginTop: 36, marginBottom: 18 },
-  profileImage: { width: 92, height: 92, borderRadius: 60, marginBottom: 12 },
+  container: {
+    flex: 1,
+    backgroundColor: '#F8F8F8',
+  },
+  content: {
+    alignItems: 'center',
+    paddingBottom: 40,
+  },
+ 
+  profileSection: {
+    alignItems: 'center',
+    marginTop: -50,
+  },
+  profileImage: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    borderWidth: 3,
+    borderColor: '#fff',
+  },
   name: {
-    fontSize: 22,
-    fontWeight: "bold",
-    color: COLORS.darkGreen,
-    marginBottom: 3,
+    marginTop: 10,
+    fontSize: 18,
+    fontWeight: '500',
   },
-  role: { color: COLORS.mediumGreen, fontWeight: "500", fontSize: 15 },
-  section: { marginHorizontal: 32, marginVertical: 18 },
-  sectionTitle: {
-    color: COLORS.mediumGreen,
-    fontSize: 15,
-    fontWeight: "600",
-    marginBottom: 2,
+  options: {
+    marginTop: 30,
+    width: '80%',
   },
-  sectionValue: { color: COLORS.text, fontSize: 17, fontWeight: "500" },
-  editButton: {
-    flexDirection: "row",
-    backgroundColor: COLORS.mediumGreen,
-    alignItems: "center",
-    justifyContent: "center",
-    alignSelf: "center",
-    marginTop: 26,
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    borderRadius: 16,
+  optionButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 15,
   },
-  editButtonText: { color: "#fff", fontSize: 16, fontWeight: "bold" },
+  optionText: {
+    marginLeft: 15,
+    fontSize: 16,
+    color: '#000',
+  },
+  logoutButton: {
+    marginTop: 40,
+    backgroundColor: '#D19761',
+    paddingVertical: 12,
+    paddingHorizontal: 40,
+    borderRadius: 8,
+  },
+  logoutText: {
+    color: '#fff',
+    fontWeight: '600',
+    fontSize: 16,
+  },
+  
 });
