@@ -17,6 +17,7 @@ export async function downloadProfileFromSupabase(userId) {
     console.log("No profile found in Supabase", error);
     return null;
   }
+  
 
   await executeSql(
     `INSERT OR REPLACE INTO profiles (id, display_name, phone, avatar_url, is_synced)

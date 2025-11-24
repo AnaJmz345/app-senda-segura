@@ -1,3 +1,5 @@
+//import { logInfo, logWarn, logError } from '../../utils/logger';
+
 import React, { useState } from 'react';
 import { 
   View, 
@@ -47,13 +49,13 @@ export default function RegisterScreen() {
       }
 
       // Crea la fila en profiles (rol por defecto 'biker')
-      const display_name = `${name} ${lastName}`.trim();
+      /*const display_name = `${name} ${lastName}`.trim();
       const { error: pErr } = await supabase.from('profiles').insert({
         id: userId,
         display_name,
         birthdate: birth,
-      });
-      if (pErr) throw pErr;
+      });*/
+      //if (pErr) throw pErr;
 
       navigation.navigate('Success');
     } catch (e) {

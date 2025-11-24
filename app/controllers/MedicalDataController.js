@@ -42,7 +42,7 @@ export const MedicalDataController = {
     if (existing) {
       await MedicalDataModel.updateByUser(userId, dataToInsert);
     } else {
-      console.log("ANDO INSERTANDOOOOOO")
+     
       await MedicalDataModel.insert(dataToInsert);
     }
   },
