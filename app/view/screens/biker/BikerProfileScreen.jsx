@@ -6,6 +6,8 @@ import TopMenu from '../../components/TopMenu'
 import { useAuth } from '../../context/AuthContext'; 
 import { loadUserProfile } from "../../../controllers/BikerProfileController";
 
+import { logInfo,logError } from '../../../utils/logger';
+
 export default function BikerProfileScreen({navigation}) {
   const [profile, setProfile] = useState(null);
   const {user,signOut} = useAuth();
@@ -13,6 +15,7 @@ export default function BikerProfileScreen({navigation}) {
   //Función que obtiene los datos del perfil de sqlite (vista->controller->model)
   useEffect(() => {
     const load = async () => {
+      logInfo("OBTENIENDO PERFIL BIKER DE SQLITE")
       const data = await loadUserProfile(user.id);
       setProfile(data);
     };

@@ -37,4 +37,15 @@ export async function initLocalDB() {
       age INTEGER
     );
   `);
+
+  //tabla con los logs 
+  await executeSql(`
+  CREATE TABLE IF NOT EXISTS logs (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    timestamp TEXT,
+    level TEXT,
+    message TEXT
+  );
+`);
+
 }
