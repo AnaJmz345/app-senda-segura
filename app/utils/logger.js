@@ -1,5 +1,5 @@
 import { logger, consoleTransport } from "react-native-logs";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { saveLogToDB } from "../models/LogModel"; // la función SQLite
 
 // Niveles de log
 const logLevels = {
@@ -9,9 +9,23 @@ const logLevels = {
   error: 3,
 };
 
+const colorTransport = consoleTransport;
+
+
+const sqliteTransport = async (props) => {
+  const { level, msg } = props;
+  await saveLogToDB(level.text, msg);  // Aquí guardamos REAL al SQLite
+};
+
 // Instancia del logger
 const customLogger = logger.createLogger({
-  transport: consoleTransport,
+  transport: (props) => {
+    // Consola con colores
+    colorTransport(props);
+
+    // Guardar en SQLite
+    sqliteTransport(props);
+  },
   transportOptions: {
     colors: {
       debug: "blueBright",
@@ -29,53 +43,9 @@ const customLogger = logger.createLogger({
   enabled: true,
 });
 
-// Guardar log en almacenamiento local
-async function saveLogLocally(level, message) {
-  const logEntry = {
-    timestamp: new Date().toISOString(),
-    level,
-    message,
-  };
-
-  try {
-    const existing = JSON.parse((await AsyncStorage.getItem("logs")) || "[]");
-    existing.push(logEntry);
-    await AsyncStorage.setItem("logs", JSON.stringify(existing));
-  } catch (err) {
-    console.error("Error guardando log local:", err);
-  }
-}
-
-// Funciones para loguear
-export async function logInfo(message) {
-  customLogger.info(message);
-  await saveLogLocally("info", message);
-}
-
-export async function logWarn(message) {
-  customLogger.warn(message);
-  await saveLogLocally("warn", message);
-}
-
-export async function logError(message) {
-  customLogger.error(message);
-  await saveLogLocally("error", message);
-}
-
-export async function logDebug(message) {
-  customLogger.debug(message);
-  await saveLogLocally("debug", message);
-}
-
-// Leer logs
-export async function getLocalLogs() {
-  try {
-    const logs = await AsyncStorage.getItem("logs");
-    return logs ? JSON.parse(logs) : [];
-  } catch (error) {
-    console.error("Error leyendo logs locales:", error);
-    return [];
-  }
-}
+export function logInfo(msg) { customLogger.info(msg); }
+export function logWarn(msg) { customLogger.warn(msg); }
+export function logError(msg) { customLogger.error(msg); }
+export function logDebug(msg) { customLogger.debug(msg); }
 
 export default customLogger;
