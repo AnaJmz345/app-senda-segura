@@ -1,73 +1,45 @@
-import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, Image, TouchableOpacity,ScrollView  } from "react-native";
+import React, {useEffect,useState} from 'react';
+import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons, FontAwesome5 } from '@expo/vector-icons';
-import { COLORS } from "../../constants/colors";
-import TopMenu from "../../components/TopMenu";
-import { executeSql } from "../../lib/sqlite";
-import NetInfo from "@react-native-community/netinfo";
-import { useAuth } from "../../context/AuthContext";
-import { MedicalDataController } from "../../../controllers/MedicalDataController";
-import { loadLocalProfile } from "../../lib/syncProfile";
-import { downloadProfileFromSupabase } from "../../lib/syncProfile";
+import TopMenu from '../../components/TopMenu'
+import { useAuth } from '../../context/AuthContext'; 
+import { loadUserProfile } from "../../../controllers/BikerProfileController";
 
-export default function BikerProfileScreen({ navigation }) {
+export default function BikerProfileScreen({navigation}) {
   const [profile, setProfile] = useState(null);
-  const { user } = useAuth();
-  const handleLogout = async () => {
-    await signOut();
-  };
+  const {user,signOut} = useAuth();
 
+  //Función que obtiene los datos del perfil de sqlite (vista->controller->model)
   useEffect(() => {
     const load = async () => {
-      let local = await executeSql("SELECT * FROM profiles LIMIT 1");
-
-      if (local.rows.length === 0) {
-        await downloadProfileFromSupabase(user.id);
-        local = await executeSql("SELECT * FROM profiles LIMIT 1");
-      }
-
-      setProfile(local.rows._array[0] || null);
+      const data = await loadUserProfile(user.id);
+      setProfile(data);
     };
     load();
   }, []);
 
-  useEffect(() => {
-    const syncPendingProfiles = async () => {
-      const netState = await NetInfo.fetch();
-      if (netState.isConnected) {
-        const res = await executeSql(
-          `SELECT * FROM profiles WHERE is_synced = 0`
-        );
-        const pendingProfiles = res.rows._array;
-        for (const profile of pendingProfiles) {
-          await MedicalDataController.saveMedicalData(profile.id, profile);
-          await executeSql(`UPDATE profiles SET is_synced = 1 WHERE id = ?`, [
-            profile.id,
-          ]);
-        }
-      }
-    };
-    syncPendingProfiles();
-  }, [user]);
+  const handleLogout = async () => {
+    await signOut();
+  };
+  
 
   return (
-    <ScrollView contentContainerStyle={styles.content}>
-      <TopMenu navigation={navigation} />
-      <View style={styles.profileSection}>
-        <Image
-          source={{
-            uri:
+      <ScrollView contentContainerStyle={styles.content}>
+        <TopMenu navigation ={navigation}></TopMenu>
+        {/* Imagen y nombre de perfil */}
+        <View style={styles.profileSection}>
+          <Image
+            source={{ uri:
               profile?.avatar_url ||
               "https://i.pinimg.com/736x/bc/98/0b/bc980b9e0bf723ac8393222ff0249da9.jpg",
-          }}
-          style={styles.profileImage}
-        />
-        <Text style={styles.name}>
-          {profile?.display_name || "Biker"}
-        </Text>
-      </View>
+            }}
+            style={styles.profileImage}
+          />
+          <Text style={styles.name}>{profile?.display_name || "Ciclista"}</Text>
+        </View>
 
-      <View style={styles.options}>
+        <View style={styles.options}>
           <TouchableOpacity style={styles.optionButton} onPress={() => navigation.navigate('EditBikerProfile')}>
             <Ionicons name="person-outline" size={24} color="black" />
             <Text style={styles.optionText}>Editar perfil</Text>
@@ -89,6 +61,7 @@ export default function BikerProfileScreen({ navigation }) {
           <Text style={styles.logoutText}>Cerrar sesión</Text>
         </TouchableOpacity>
       </ScrollView>
+
   );
 }
 

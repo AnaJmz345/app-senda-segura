@@ -20,7 +20,7 @@ function AppContent() {
 
       if (user) {
         await downloadProfileFromSupabase(user.id);
-        await syncPendingProfile(user.id);
+        await syncPendingProfile(user.id)
       }
     };
 
