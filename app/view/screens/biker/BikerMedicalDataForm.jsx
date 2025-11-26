@@ -4,6 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Picker } from '@react-native-picker/picker'; 
 import { useAuth } from '../../context/AuthContext';
 import { MedicalDataController } from '../../../controllers/MedicalDataController';
+import { logInfo,logError } from '../../../utils/logger';
 
 export default function BikerMedicalDataForm({navigation}) {
   const { user } = useAuth();
@@ -21,6 +22,7 @@ export default function BikerMedicalDataForm({navigation}) {
   const handleSave = async () => {
     try {
       await MedicalDataController.saveMedicalData(user.id, form);
+      logInfo("Biker medical data guardada en supa")
       Alert.alert('Datos guardados correctamente');
     } catch (error) {
       Alert.alert('Error', error.message);
