@@ -14,7 +14,12 @@ const colorTransport = consoleTransport;
 
 const sqliteTransport = async (props) => {
   const { level, msg } = props;
-  await saveLogToDB(level.text, msg);  // Aquí guardamos REAL al SQLite
+  //await saveLogToDB(level.text, msg);  // Aquí guardamos REAL al SQLite
+
+  //Solo guardaa los logs de error
+  if (level.severity === logLevels.error) {
+    await saveLogToDB(level.text, msg);
+  }
 };
 
 // Instancia del logger
