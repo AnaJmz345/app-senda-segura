@@ -6,7 +6,7 @@ import AppNavigator from './app/view/navigation/AppNavigator';
 export default function App() {
   return (
     <AuthProvider>
-      {/* 🔹 Este contenedor es esencial para que la navegación funcione */}
+      {/* Este contenedor es esencial para que la navegación funcione */}
       <NavigationContainer>
         <AppNavigator />
       </NavigationContainer>

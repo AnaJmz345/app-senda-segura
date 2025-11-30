@@ -10,17 +10,25 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // 🔹 Inicializar sesión al cargar la app
     (async () => {
-      const { data } = await supabase.auth.getSession();
-      setSession(data.session ?? null);
-      setLoading(false);
-      if (data.session?.user?.id) {
-        await loadProfile(data.session.user.id);
+      try {
+        const { data } = await supabase.auth.getSession();
+        console.log('Sesión restaurada:', data.session ? 'Sí' : 'No');
+        setSession(data.session ?? null);
+        if (data.session?.user?.id) {
+          await loadProfile(data.session.user.id);
+        }
+      } catch (error) {
+        console.error('Error al restaurar sesión:', error);
+      } finally {
+        setLoading(false);
       }
     })();
 
+    // 🔹 Escuchar cambios de autenticación
     const { data: sub } = supabase.auth.onAuthStateChange(async (event, newSession) => {
-  
+      console.log('Auth state change:', event);
       setSession(newSession);
 
       if (event === 'SIGNED_IN' && newSession?.user?.id) {
@@ -29,13 +37,14 @@ export function AuthProvider({ children }) {
           console.log('Cargando perfil tras login:', newSession.user.id);
           await loadProfile(newSession.user.id);
         }, 400);
+      } else if (event === 'SIGNED_OUT') {
+        setProfile(null);
       } else if (newSession?.user?.id) {
         await loadProfile(newSession.user.id);
       } else {
         setProfile(null);
       }
     });
-
 
     return () => sub.subscription.unsubscribe();
   }, []);
