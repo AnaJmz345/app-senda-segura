@@ -13,6 +13,7 @@ import {
   Alert, 
   ActivityIndicator 
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { COLORS } from '../constants/colors';
 import { useNavigation } from '@react-navigation/native';
 import { supabase } from '../lib/supabase';
@@ -26,6 +27,7 @@ export default function RegisterScreen() {
   const [pwd, setPwd] = useState('');
   const [birth, setBirth] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleRegister = async () => {
     if (!name || !lastName || !email || !pwd || !birth) {
@@ -109,14 +111,26 @@ export default function RegisterScreen() {
                 style={styles.input} 
                 placeholderTextColor="#ccc" 
               />
-              <TextInput 
-                placeholder="Contraseña" 
-                value={pwd} 
-                onChangeText={setPwd} 
-                secureTextEntry 
-                style={styles.input} 
-                placeholderTextColor="#ccc" 
-              />
+              <View style={styles.passwordContainer}>
+                <TextInput 
+                  placeholder="Contraseña" 
+                  value={pwd} 
+                  onChangeText={setPwd} 
+                  secureTextEntry={!showPassword}
+                  style={styles.passwordInput} 
+                  placeholderTextColor="#ccc" 
+                />
+                <TouchableOpacity 
+                  onPress={() => setShowPassword(!showPassword)}
+                  style={styles.eyeIcon}
+                >
+                  <Ionicons 
+                    name={showPassword ? "eye-off" : "eye"} 
+                    size={24} 
+                    color={COLORS.darkGreen} 
+                  />
+                </TouchableOpacity>
+              </View>
               <TextInput 
                 placeholder="Fecha de nacimiento" 
                 value={birth} 
@@ -201,6 +215,23 @@ const styles = StyleSheet.create({
     width: 250,
     fontSize: 15, 
     color: COLORS.darkGreen
+  },
+  passwordContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: COLORS.white,
+    borderRadius: 10,
+    marginVertical: 8,
+    width: 250,
+  },
+  passwordInput: {
+    flex: 1,
+    padding: 12,
+    fontSize: 15,
+    color: COLORS.darkGreen,
+  },
+  eyeIcon: {
+    padding: 12,
   },
   button: { 
     backgroundColor: COLORS.mediumGreen, 
