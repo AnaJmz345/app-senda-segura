@@ -1,17 +1,66 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView } from 'react-native';
-
+import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import { Ionicons, FontAwesome5 } from '@expo/vector-icons';
-import TopMenu from '../../components/TopMenu'
+import TopMenu from '../../components/TopMenu';
+import { useAuth } from '../../context/AuthContext'; 
+
+
 export default function AdminProfileScreen({ navigation }) {
+  const {signOut} = useAuth();
+  
+  const handleLogout = async () => {
+    try {
+      await signOut();
+    } catch (error) {
+      console.error('Error signing out:', error);
+      Alert.alert('Error', 'No se pudo cerrar la sesión. Intenta de nuevo.');
+    }
+  };
+
+
   return (
     <View style={styles.container}>
-
       <ScrollView contentContainerStyle={styles.content}>
-        <TopMenu navigation ={navigation}></TopMenu>
-        <Text>Soy un perfil de admin</Text>
-        
+        <TopMenu navigation={navigation}></TopMenu>
+
+        {/* Imagen y nombre de perfil */}
+        <View style={styles.profileSection}>
+          <Image
+            source={{ uri: 'https://i.pinimg.com/736x/bc/98/0b/bc980b9e0bf723ac8393222ff0249da9.jpg' }} //futuro: permitir cambiar imagen de perfil
+            style={styles.profileImage}
+          />
+          <Text style={styles.name}>Admin Name</Text>
+        </View>
+
+        {/* Opciones de perfil */}
+        <View style={styles.options}>
+          <TouchableOpacity style={styles.optionButton} onPress={() => navigation.navigate('EditAdminProfileScreen')}>
+            <Ionicons name="person-outline" size={24} color="black" />
+            <Text style={styles.optionText}>Editar perfil</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.optionButton} onPress={() => navigation.navigate('EditAndManageRoutes')}>
+            <Ionicons name="compass" size={24} color="black" />
+            <Text style={styles.optionText}>Gestionar Rutas</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.optionButton} onPress={() => navigation.navigate('ManageParamedics')}>
+            <FontAwesome5 name="user-nurse" size={24} color="black" />
+            <Text style={styles.optionText}>Gestionar Paramédicos</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.optionButton} onPress={() => navigation.navigate('MedicalHistoryRecords')}>
+            <FontAwesome5 name="file-medical" size={24} color="black" />
+            <Text style={styles.optionText}>Historial Médico</Text>
+          </TouchableOpacity>
+
+        </View>
       </ScrollView>
+
+      {/* Botón cerrar sesión */}
+      <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+        <Text style={styles.logoutText}>Cerrar sesión</Text>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -22,6 +71,50 @@ const styles = StyleSheet.create({
     backgroundColor: '#F8F8F8',
   },
   content: {
-    flexGrow: 1,
+    alignItems: 'center',
+    paddingBottom: 20,
+  },
+  profileSection: {
+    alignItems: 'center',
+    marginTop: -50,
+  },
+  profileImage: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    borderWidth: 3,
+    borderColor: '#fff',
+  },
+  name: {
+    marginTop: 10,
+    fontSize: 18,
+    fontWeight: '500',
+  },
+  options: {
+    marginTop: 60,
+    width: '80%',
+  },
+  optionButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 15,
+  },
+  optionText: {
+    marginLeft: 15,
+    fontSize: 16,
+    color: '#000',
+  },
+  logoutButton: {
+    backgroundColor: '#D19761',
+    paddingVertical: 12,
+    paddingHorizontal: 40,
+    borderRadius: 8,
+    margin: 20,
+    alignSelf: 'center',
+  },
+  logoutText: {
+    color: '#fff',
+    fontWeight: '600',
+    fontSize: 16,
   },
 });

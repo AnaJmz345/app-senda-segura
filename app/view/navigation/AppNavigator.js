@@ -13,7 +13,7 @@ import HomeScreen from '../screens/HomeScreen';
 import ActiveBikersScreen from '../screens/paramedic/ActiveBikersScreen';
 import EmergencyCallsHistoryScreen from '../screens/paramedic/EmergencyCallsHistoryScreen';
 
-// 🔹 Tabs para roles (de tus compañeros)
+// Tabs para roles
 import AdminTabNavigator from './AdminTabNavigator';
 import BikerTabNavigator from './BikerTabNavigator';
 import ParamedicTabNavigator from './ParamedicTabNavigator';
