@@ -28,7 +28,7 @@ export default function AdminProfileScreen({ navigation }) {
 
         {/* Opciones de perfil */}
         <View style={styles.options}>
-          <TouchableOpacity style={styles.optionButton} onPress={() => navigation.navigate('EditAdminProfile')}> // checar esta función para q funcione
+          <TouchableOpacity style={styles.optionButton} onPress={() => navigation.navigate('EditAdminProfileScreen')}>
             <Ionicons name="person-outline" size={24} color="black" />
             <Text style={styles.optionText}>Editar perfil</Text>
           </TouchableOpacity>
