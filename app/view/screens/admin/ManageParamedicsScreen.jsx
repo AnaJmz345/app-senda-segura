@@ -80,6 +80,48 @@ export default function ManageParamedicsScreen({ navigation }) {
     setRefreshing(false);
   };
 
+  const handleDeleteParamedic = (paramedic) => {
+    Alert.alert(
+      'Eliminar paramédico',
+      `¿Estás seguro de que deseas eliminar a ${paramedic.name}?`,
+      [
+        {
+          text: 'Cancelar',
+          style: 'cancel'
+        },
+        {
+          text: 'Eliminar',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              // Eliminar el estado del paramédico
+              const { error: statusError } = await supabase
+                .from('paramedic_status')
+                .delete()
+                .eq('user_id', paramedic.id);
+
+              if (statusError) throw statusError;
+
+              // Cambiar el role del usuario a null para desactivarlo
+              const { error: profileError } = await supabase
+                .from('profiles')
+                .update({ role: null })
+                .eq('id', paramedic.id);
+
+              if (profileError) throw profileError;
+
+              Alert.alert('Éxito', 'Paramédico eliminado correctamente');
+              await fetchParamedics();
+            } catch (error) {
+              console.error('Error deleting paramedic:', error);
+              Alert.alert('Error', 'No se pudo eliminar el paramédico');
+            }
+          }
+        }
+      ]
+    );
+  };
+
   const renderParamedic = ({ item }) => (
     <View style={styles.paramedicCard}>
       <Image source={{ uri: item.photo }} style={styles.paramedicPhoto} />
@@ -91,7 +133,7 @@ export default function ManageParamedicsScreen({ navigation }) {
         </Text>
       </View>
 
-      <TouchableOpacity style={styles.deleteButton}>
+      <TouchableOpacity style={styles.deleteButton} onPress={() => handleDeleteParamedic(item)}>
         <Ionicons name="trash-outline" size={22} color="#E74C3C" />
       </TouchableOpacity>
     </View>
