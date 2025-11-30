@@ -37,6 +37,12 @@ export default function AdminProfileScreen({ navigation }) {
             <Ionicons name="compass" size={24} color="black" />
             <Text style={styles.optionText}>Gestionar Rutas</Text>
           </TouchableOpacity>
+
+          <TouchableOpacity style={styles.optionButton} onPress={() => navigation.navigate('ManageParamedics')}>
+            <FontAwesome5 name="user-nurse" size={24} color="black" />
+            <Text style={styles.optionText}>Gestionar Paramédicos</Text>
+          </TouchableOpacity>
+
         </View>
       </ScrollView>
 
