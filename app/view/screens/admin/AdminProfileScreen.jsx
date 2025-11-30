@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import { Ionicons, FontAwesome5 } from '@expo/vector-icons';
 import TopMenu from '../../components/TopMenu';
 import { useAuth } from '../../context/AuthContext'; 
@@ -7,8 +7,14 @@ import { useAuth } from '../../context/AuthContext';
 
 export default function AdminProfileScreen({ navigation }) {
   const {signOut} = useAuth();
+  
   const handleLogout = async () => {
-    await signOut();
+    try {
+      await signOut();
+    } catch (error) {
+      console.error('Error signing out:', error);
+      Alert.alert('Error', 'No se pudo cerrar la sesión. Intenta de nuevo.');
+    }
   };
 
 
