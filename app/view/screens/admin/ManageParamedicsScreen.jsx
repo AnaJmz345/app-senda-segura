@@ -1,22 +1,72 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, FlatList, TextInput, Image, RefreshControl } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, FlatList, TextInput, Image, RefreshControl, Alert } from 'react-native';
 import { Ionicons, FontAwesome5 } from '@expo/vector-icons';
 import { COLORS } from '../../constants/colors';
+import { supabase } from '../../lib/supabase';
 
 export default function ManageParamedicsScreen({ navigation }) {
   const [activeTab, setActiveTab] = useState('all'); // 'all', 'active' o 'inactive'
   const [searchText, setSearchText] = useState('');
   const [refreshing, setRefreshing] = useState(false);
+  const [paramedics, setParamedics] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  // Datos de ejemplo (después conectar con la base de datos)
-  const paramedics = [
-    { id: 1, name: 'Toño Gonzalez', age: 25, cases: 5, active: true, photo: 'https://i.pravatar.cc/150?img=12' },
-    { id: 2, name: 'Sarahi Muñoz', age: 22, cases: 2, active: true, photo: 'https://i.pravatar.cc/150?img=45' },
-    { id: 3, name: 'Mario Merlo', age: 23, cases: 4, active: false, photo: 'https://i.pravatar.cc/150?img=33' },
-    { id: 4, name: 'Mariela Sainz', age: 25, cases: 5, active: true, photo: 'https://i.pravatar.cc/150?img=47' },
-    { id: 5, name: 'Belinda', age: 20, cases: 5, active: false, photo: 'https://i.pravatar.cc/150?img=44' },
-    { id: 6, name: 'Ana Pao', age: 29, cases: 1, active: true, photo: 'https://i.pravatar.cc/150?img=48' },
-  ];
+  useEffect(() => {
+    fetchParamedics();
+  }, []);
+
+  const fetchParamedics = async () => {
+    try {
+      // Obtener todos los usuarios con role='paramedic'
+      const { data: profiles, error: profilesError } = await supabase
+        .from('profiles')
+        .select('id, display_name, phone, avatar_url')
+        .eq('role', 'paramedic');
+
+      if (profilesError) throw profilesError;
+
+      // Para cada paramédico, obtener su estado y contar casos
+      const paramedicsData = await Promise.all(
+        profiles.map(async (profile) => {
+          // Obtener estado del paramédico
+          const { data: status } = await supabase
+            .from('paramedic_status')
+            .select('is_active')
+            .eq('user_id', profile.id)
+            .single();
+
+          // Contar casos atendidos
+          const { count } = await supabase
+            .from('paramedic_cases')
+            .select('*', { count: 'exact', head: true })
+            .eq('paramedic_id', profile.id);
+
+          // Obtener edad del perfil médico si existe
+          const { data: medicalProfile } = await supabase
+            .from('medical_profiles')
+            .select('age')
+            .eq('user_id', profile.id)
+            .single();
+
+          return {
+            id: profile.id,
+            name: profile.display_name || 'Sin nombre',
+            age: medicalProfile?.age || 0,
+            cases: count || 0,
+            active: status?.is_active || false,
+            photo: profile.avatar_url,
+          };
+        })
+      );
+
+      setParamedics(paramedicsData);
+    } catch (error) {
+      console.error('Error fetching paramedics:', error);
+      Alert.alert('Error', 'No se pudieron cargar los paramédicos');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const filteredParamedics = paramedics.filter(p => {
     const matchesSearch = p.name.toLowerCase().includes(searchText.toLowerCase());
@@ -26,11 +76,8 @@ export default function ManageParamedicsScreen({ navigation }) {
 
   const onRefresh = async () => {
     setRefreshing(true);
-    // Aquí conectar con la base de datos para recargar los paramédicos
-    // await fetchParamedics();
-    setTimeout(() => {
-      setRefreshing(false);
-    }, 1000);
+    await fetchParamedics();
+    setRefreshing(false);
   };
 
   const renderParamedic = ({ item }) => (
@@ -112,10 +159,6 @@ export default function ManageParamedicsScreen({ navigation }) {
         }
       />
 
-      {/* Botón flotante para agregar nuevo paramédico */}
-      <TouchableOpacity style={styles.addButton}>
-        <Ionicons name="add" size={32} color="#FFF" />
-      </TouchableOpacity>
     </View>
   );
 }
