@@ -4,6 +4,7 @@ import AdminProfileScreen from '../screens/admin/AdminProfileScreen';
 import AdminMapScreen from '../screens/admin/AdminMapScreen';
 import EditAdminProfileScreen from '../screens/admin/EditAdminProfileScreen';
 import ManageParamedicsScreen from '../screens/admin/ManageParamedicsScreen';
+import MedicalHistoryRecordsScreen from '../screens/admin/MedicalHistoryRecordsScreen';
 const Stack = createNativeStackNavigator();
 
 
@@ -25,6 +26,10 @@ export default function AdminTabNavigator() {
         <Stack.Screen 
           name="ManageParamedics"
           component={ManageParamedicsScreen}
+        />
+        <Stack.Screen 
+          name="MedicalHistoryRecords"
+          component={MedicalHistoryRecordsScreen}
         />
     </Stack.Navigator>
   );

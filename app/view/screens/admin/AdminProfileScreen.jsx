@@ -43,6 +43,11 @@ export default function AdminProfileScreen({ navigation }) {
             <Text style={styles.optionText}>Gestionar Paramédicos</Text>
           </TouchableOpacity>
 
+          <TouchableOpacity style={styles.optionButton} onPress={() => navigation.navigate('MedicalHistoryRecords')}>
+            <FontAwesome5 name="file-medical" size={24} color="black" />
+            <Text style={styles.optionText}>Historial Médico</Text>
+          </TouchableOpacity>
+
         </View>
       </ScrollView>
 
