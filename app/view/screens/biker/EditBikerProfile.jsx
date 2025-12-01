@@ -6,12 +6,14 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../../context/AuthContext';
 import { updateUserProfile, loadUserProfile } from '../../../controllers/BikerProfileController';
+import * as ImagePicker from "expo-image-picker";
+
 
 export default function EditBikerProfile({ navigation }) {
   const { user } = useAuth();
 
   const [isEditing, setIsEditing] = useState(false);
-  const [originalProfile, setOriginalProfile] = useState(null); // ⬅️ guardamos copia original
+  const [originalProfile, setOriginalProfile] = useState(null); // guardamos copia original
   const [editProfile, setEditProfile] = useState({
     real_display_name: "",
     phone: "",
@@ -64,6 +66,28 @@ export default function EditBikerProfile({ navigation }) {
 
     setIsEditing(false); // volver a modo bloqueado
   };
+  const handlePickImage = async () => {
+    try {
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: "images",   
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 0.7,
+      });
+
+
+      if (!result.canceled) {
+        setEditProfile({
+          ...editProfile,
+          avatar_url: result.assets[0].uri
+        });
+      }
+    } catch (err) {
+      Alert.alert("Error", "No se pudo abrir la galería");
+    }
+  };
+
+  
 
   return (
     <ScrollView style={styles.container}>
