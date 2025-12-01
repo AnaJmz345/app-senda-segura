@@ -1,15 +1,29 @@
-import * as SQLite from "expo-sqlite";  
+import * as SQLite from 'expo-sqlite';
 
-let dbInstance = null;
+let dbPromise = null;
 
-export async function getDB() {
-  if (!dbInstance) {
-    dbInstance = await SQLite.openDatabaseAsync("senda_segura.db"); 
+async function getDB() {
+  if (!dbPromise) {
+    dbPromise = SQLite.openDatabaseAsync('senda_segura.db');
   }
-  return dbInstance;
+  return dbPromise;
 }
 
-export async function executeSql(query, params = []) {
-  const db = await getDB();
-  return db.runAsync(query, params); 
+export async function executeSql(sql, params = []) {
+  try {
+    const db = await getDB();
+    const isSelect = /^\s*select/i.test(sql);
+
+    if (isSelect) {
+      const rows = await db.getAllAsync(sql);
+      return {
+        rows: { _array: rows, length: rows.length }
+      };
+    } else {
+      return await db.runAsync(sql, ...(params || []));
+    }
+  } catch (error) {
+    console.error('SQL error:', sql, error);
+    throw error;
+  }
 }
