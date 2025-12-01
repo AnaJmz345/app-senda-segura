@@ -12,7 +12,7 @@ import TopMenu from '../../components/TopMenu';
 import { useAuth } from '../../context/AuthContext';
 import { loadUserProfile } from '../../../controllers/BikerProfileController';
 import { supabase } from '../../lib/supabase';
-import { logInfo } from '../../../utils/logger';
+import { logInfo,logDebug } from '../../../utils/logger';
 import { Ionicons, FontAwesome5 } from '@expo/vector-icons';
 
 export default function BikerProfileScreen({ navigation }) {
@@ -28,7 +28,9 @@ export default function BikerProfileScreen({ navigation }) {
     const load = async () => {
       logInfo("OBTENIENDO PERFIL DEL BIKER DESDE SQLITE");
       const data = await loadUserProfile(user.id);
+      logDebug("PROFILE CARGADO: ",data)
       setProfile(data);
+      
     };
     load();
   }, []);
