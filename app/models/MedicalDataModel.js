@@ -90,17 +90,18 @@ export const MedicalDataModel = { //al definirla así es un objeto de JS que tie
       logInfo("[Model] Guardando datos médicos en sqlite",md)
       await db.runAsync( //run async es para correr una query desql
         //replace es la sintaxis de sqlite Si la clave primaria (user_id) ya existe → hace UPDATE , Si no existe → hace INSERT
-        `INSERT OR REPLACE INTO medical_profiles (user_id, age, blood_type, allergies, conditions,medications,emergency_contact_relation,emergency_contact_phone)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+        `INSERT OR REPLACE INTO medical_profiles (user_id, blood_type, allergies, medications, conditions, emergency_contact_relation, emergency_contact_phone, updated_at, age)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [
           md.user_id,
-          md.age ?? null,
           md.blood_type ?? null,
           md.allergies ?? null,
-          md.conditions ?? null,
           md.medications ?? null,
+          md.conditions ?? null,
           md.emergency_contact_relation ?? null,
-          md.emergency_contact_phone ?? null
+          md.emergency_contact_phone ?? null,
+          md.updated_at ?? new Date().toISOString(),
+          md.age ?? null
           // el ?? es un Nullish Coalescing Operator y sirve para decir “Si este valor es null o undefined, usa otro valor”.
         ]
       );
@@ -115,5 +116,4 @@ export const MedicalDataModel = { //al definirla así es un objeto de JS que tie
 
 
 };
-
 

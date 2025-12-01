@@ -1,4 +1,4 @@
-import { executeSql  } from "../view/lib/sqlite";
+import { getDB   } from "../view/lib/sqlite";
 import { logInfo,logError } from '../utils/logger';
 
 
@@ -6,15 +6,17 @@ export async function getLocalProfileById(userId) {
   try {
     logInfo(`Buscando perfil local con id=${userId}`);
 
-    const res = await executeSql(
-      `SELECT * FROM profiles WHERE id = ? LIMIT 1`,
+     const db = await getDB();
+
+    const result = await db.getFirstAsync(
+      "SELECT * FROM profiles WHERE id = ? LIMIT 1",
       [userId]
     );
 
+    logInfo("[MODEL] Perfil obtenido correctamente:", result);
 
-    logInfo(`[MODEL] Perfil obtenido de correctamente para id=${userId}`);
+    return result || null;
 
-    return  res.rows._array[0]  || null;
   } catch (error) {
     logError(`[MODEL] Error obteniendo perfil local id=${userId}`, error);
     throw error; // lo vuelves a lanzar para manejarlo arriba si quieres
@@ -25,8 +27,9 @@ export async function saveLocalProfile(profile) {
   try {
     logInfo(`Guardando perfil local con id=${profile.id}`);
 
-    await executeSql(
-      `INSERT OR REPLACE INTO profiles (id, display_name, phone, avatar_url, is_synced)
+     await db.runAsync(
+      `INSERT OR REPLACE INTO profiles 
+       (id, display_name, phone, avatar_url, is_synced)
        VALUES (?, ?, ?, ?, ?)`,
       [
         profile.id,
