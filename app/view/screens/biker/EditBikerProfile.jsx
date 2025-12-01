@@ -10,6 +10,8 @@ import { updateUserProfile, loadUserProfile } from '../../../controllers/BikerPr
 export default function EditBikerProfile({ navigation }) {
   const { user } = useAuth();
 
+  const [isEditing, setIsEditing] = useState(false);
+  const [originalProfile, setOriginalProfile] = useState(null); // ⬅️ guardamos copia original
   const [editProfile, setEditProfile] = useState({
     real_display_name: "",
     phone: "",
@@ -21,6 +23,7 @@ export default function EditBikerProfile({ navigation }) {
     const load = async () => {
       const p = await loadUserProfile(user.id);
       if (p) {
+        setOriginalProfile(p); // guardamos original
         setEditProfile({
           real_display_name: p.real_display_name ?? "",
           phone: p.phone ?? "",
@@ -32,13 +35,34 @@ export default function EditBikerProfile({ navigation }) {
   }, []);
 
   const handleSave = async () => {
+    if (!isEditing) {
+      setIsEditing(true);
+      return;
+    }
+
     try {
       await updateUserProfile(user.id, editProfile);
       Alert.alert("Éxito", "Perfil actualizado correctamente");
-      navigation.goBack();
+
+      setOriginalProfile(editProfile); // actualizamos original
+      setIsEditing(false);
+
     } catch (error) {
       Alert.alert("Error", "No se pudo actualizar el perfil");
     }
+  };
+
+  const handleCancel = () => {
+    if (originalProfile) {
+      // Restauramos los valores originales
+      setEditProfile({
+        real_display_name: originalProfile.real_display_name ?? "",
+        phone: originalProfile.phone ?? "",
+        avatar_url: originalProfile.avatar_url ?? ""
+      });
+    }
+
+    setIsEditing(false); // volver a modo bloqueado
   };
 
   return (
@@ -65,7 +89,8 @@ export default function EditBikerProfile({ navigation }) {
 
         <Text style={styles.label}>Nombre del perfil</Text>
         <TextInput
-          style={styles.input}
+          style={[styles.input, !isEditing && styles.inputDisabled]}
+          editable={isEditing}
           value={editProfile.real_display_name}
           onChangeText={(text) =>
             setEditProfile({ ...editProfile, real_display_name: text })
@@ -74,7 +99,8 @@ export default function EditBikerProfile({ navigation }) {
 
         <Text style={styles.label}>Número de teléfono</Text>
         <TextInput
-          style={styles.input}
+          style={[styles.input, !isEditing && styles.inputDisabled]}
+          editable={isEditing}
           value={editProfile.phone}
           onChangeText={(text) =>
             setEditProfile({ ...editProfile, phone: text })
@@ -83,9 +109,19 @@ export default function EditBikerProfile({ navigation }) {
 
       </View>
 
+      {/* Botón guardar / editar */}
       <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
-        <Text style={styles.saveButtonText}>Guardar cambios</Text>
+        <Text style={styles.saveButtonText}>
+          {isEditing ? "Guardar cambios" : "Editar"}
+        </Text>
       </TouchableOpacity>
+
+      {/* Botón cancelar SOLO cuando esté editando */}
+      {isEditing && (
+        <TouchableOpacity style={styles.cancelButton} onPress={handleCancel}>
+          <Text style={styles.cancelButtonText}>Cancelar</Text>
+        </TouchableOpacity>
+      )}
 
     </ScrollView>
   );
@@ -111,8 +147,15 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     marginBottom: 18,
   },
+  inputDisabled: {
+    opacity: 0.5,
+  },
   saveButton: { alignItems: 'center', marginTop: 10 },
   saveButtonText: { color: '#D19761', fontWeight: '700', fontSize: 16 },
+
+  cancelButton: { alignItems: 'center', marginTop: 30 },
+  cancelButtonText: { color: '#D19761', fontWeight: '700', fontSize: 16,opacity:0.8 },
+
   profileImage: { width: 150, height: 150, borderRadius: 75 },
   profileSection: { alignItems: 'center', margin: 20 },
 });
