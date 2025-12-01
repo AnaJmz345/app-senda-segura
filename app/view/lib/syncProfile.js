@@ -20,13 +20,14 @@ export async function downloadProfileFromSupabase(userId) {
   
 
   await executeSql(
-    `INSERT OR REPLACE INTO profiles (id, display_name, phone, avatar_url, is_synced)
-     VALUES (?, ?, ?, ?, 1)`,
+    `INSERT OR REPLACE INTO profiles (id, display_name, phone, avatar_url, is_synced,real_display_name)
+     VALUES (?, ?, ?, ?, 1,?)`,
     [
       data.id,
       data.display_name,
       data.phone,
       data.avatar_url,
+      data.real_display_name ?? null,
     ]
   );
 

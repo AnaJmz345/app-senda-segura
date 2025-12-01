@@ -145,7 +145,7 @@ export default function BikerProfileScreen({ navigation }) {
           }}
           style={styles.profileImage}
         />
-        <Text style={styles.name}>{profile?.display_name || "Ciclista"}</Text>
+        <Text style={styles.name}>{profile?.real_display_name|| "Ciclista"}</Text>
       </View>
 
       {/* Opciones */}
