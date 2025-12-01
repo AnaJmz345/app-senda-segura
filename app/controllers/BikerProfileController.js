@@ -21,7 +21,7 @@ export async function updateUserProfile(userId, changes) {
 
      if (changes.avatar_url && changes.avatar_url.startsWith("file")) {
       logInfo("[PROFILE] Detectada imagen local, subiendo al bucket...");
-      finalAvatarUrl = await ImageModel.uploadAvatar(userId, changes.avatar_url);
+      finalAvatarUrl = await UploadImageModel.uploadAvatar(userId, changes.avatar_url);
     }
 
     // 1) Actualizar Supabase

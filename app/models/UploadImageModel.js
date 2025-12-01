@@ -4,33 +4,42 @@ import { logInfo, logError } from "../utils/logger";
 export const UploadImageModel = {
   async uploadAvatar(userId, localUri) {
     try {
-      const fileName = `avatars/${userId}_${Date.now()}.jpg`;
+      const folder = userId; // debe ser el auth.uid()
+      const fileName = `${Date.now()}.jpg`;
+      const path = `${folder}/${fileName}`;
 
-      logInfo("[IMAGE] Subiendo avatar a Supabase:", fileName);
+      logInfo("[IMAGE] Subiendo avatar a Supabase vía REST:", path);
 
-      const response = await fetch(localUri);
-      const blob = await response.blob();
+      let formData = new FormData();
+      formData.append("file", {
+        uri: localUri,
+        name: fileName,
+        type: "image/jpeg",
+      });
 
-      const { error: uploadError } = await supabase.storage
+      const { data, error } = await supabase.storage
         .from("avatars")
-        .upload(fileName, blob, { upsert: true });
+        .upload(path, formData, {   // <= AQUÍ EL FIX 🔥
+          contentType: "image/jpeg",
+          upsert: true,
+        });
 
-      if (uploadError) {
-        logError("[IMAGE] Error subiendo avatar", uploadError);
-        throw uploadError;
+      if (error) {
+        logError("[IMAGE] Error subiendo avatar vía REST", error);
+        throw error;
       }
 
       const { data: publicUrl } = supabase.storage
         .from("avatars")
-        .getPublicUrl(fileName);
+        .getPublicUrl(path);
 
       logInfo("[IMAGE] URL pública generada:", publicUrl.publicUrl);
 
       return publicUrl.publicUrl;
 
     } catch (err) {
-      logError("[IMAGE] Error general en uploadAvatar()", err);
+      logError("[IMAGE] Error general en uploadAvatar() via REST", err);
       throw err;
     }
-  }
+  },
 };
