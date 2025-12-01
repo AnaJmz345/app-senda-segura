@@ -151,7 +151,7 @@ export default function BikerMedicalDataForm({navigation}) {
 
       {/* Botón guardar */}
       <TouchableOpacity style={styles.saveButton}  onPress={handleSaveBtn}>
-        <Text style={styles.saveButtonText}>{isEditing ? 'Guardar cambios' : 'Traca'}</Text>
+        <Text style={styles.saveButtonText}>{isEditing ? 'Guardar cambios' : 'Editar'}</Text>
       </TouchableOpacity>
     </ScrollView>
   );

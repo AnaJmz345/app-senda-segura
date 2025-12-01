@@ -2,7 +2,7 @@ import * as SQLite from 'expo-sqlite';
 
 let dbPromise = null;
 
-async function getDB() {
+export async function getDB() {
   if (!dbPromise) {
     dbPromise = SQLite.openDatabaseAsync('senda_segura.db');
   }
