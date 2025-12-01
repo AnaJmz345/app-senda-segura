@@ -1,119 +1,81 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { useAuth } from '../context/AuthContext';  // Para obtener el perfil del usuario
+import { useAuth } from '../context/AuthContext';
 
-export default function TopMenu({navigation}) {
-  
+export default function TopMenu() {
+
+  const navigation = useNavigation();        // ← Corrección
   const route = useRoute();
-  const { profile } = useAuth(); // Obtener el perfil del usuario autenticado
- 
-  console.log('🧩 Perfil cargado:', profile);
+  const { profile } = useAuth();
 
-  // Verificar el rol del usuario y adaptar el menú
-  const isBiker = profile?.role === 'biker';
-  const isParamedic = profile?.role === 'paramedic';
-  const isAdmin = profile?.role === 'admin';
   if (!profile) {
-    console.log('Profile aún no cargado, no se renderiza menú');
     return null;
   }
 
+  const isBiker = profile?.role === 'biker';
+  const isParamedic = profile?.role === 'paramedic';
+  const isAdmin = profile?.role === 'admin';
 
   return (
     <View style={styles.header}>
       <Image
-      
-        source={require('../../../assets/fondo_top_menu.jpg')} 
+        source={require('../../../assets/fondo_top_menu.jpg')}
         style={styles.headerImage}
       />
 
       <View style={styles.menuContainer}>
-        {/* Menú para el Ciclista */}
+        {/* Menú ciclista */}
         {isBiker && (
           <>
-            <TouchableOpacity onPress={() => navigation.navigate('BikerMapScreen')}>
-              <Text
-                style={[
-                  styles.menuText,
-                  route.name === 'BikerMapScreen' && styles.activeText,
-                ]}
-              >
+            <TouchableOpacity onPress={() => navigation.navigate("BikerMapScreen")}>
+              <Text style={[styles.menuText, route.name === "BikerMapScreen" && styles.activeText]}>
                 Mapa
               </Text>
             </TouchableOpacity>
 
-            <TouchableOpacity onPress={() => navigation.navigate('BikerProfileScreen')}>
-              <Text
-                style={[
-                  styles.menuText,
-                  route.name === 'BikerProfileScreen' && styles.activeText,
-                ]}
-              >
+            <TouchableOpacity onPress={() => navigation.navigate("BikerProfileScreen")}>
+              <Text style={[styles.menuText, route.name === "BikerProfileScreen" && styles.activeText]}>
                 Perfil
               </Text>
             </TouchableOpacity>
           </>
         )}
 
-        {/* Menú para el Paramédico */}
+        {/* Menú paramédico */}
         {isParamedic && (
           <>
-            <TouchableOpacity onPress={() => navigation.navigate('ParamedicProfileScreen')}>
-              <Text
-                style={[
-                  styles.menuText,
-                  route.name === 'ParamedicProfileScreen' && styles.activeText,
-                ]}
-              >
+            <TouchableOpacity onPress={() => navigation.navigate("ParamedicProfileScreen")}>
+              <Text style={[styles.menuText, route.name === "ParamedicProfileScreen" && styles.activeText]}>
                 Perfil
               </Text>
             </TouchableOpacity>
 
-            <TouchableOpacity onPress={() => navigation.navigate('ActiveBikersScreen')}>
-              <Text
-                style={[
-                  styles.menuText,
-                  route.name === 'ActiveBikersScreen' && styles.activeText,
-                ]}
-              >
+            <TouchableOpacity onPress={() => navigation.navigate("ActiveBikersScreen")}>
+              <Text style={[styles.menuText, route.name === "ActiveBikersScreen" && styles.activeText]}>
                 Rutas
               </Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => navigation.navigate('CasesHistory')}>
-              <Text
-                style={[
-                  styles.menuText,
-                  route.name === 'CasesHistory' && styles.activeText,
-                ]}
-              >
+
+            <TouchableOpacity onPress={() => navigation.navigate("CasesHistory")}>
+              <Text style={[styles.menuText, route.name === "CasesHistory" && styles.activeText]}>
                 Historial
               </Text>
             </TouchableOpacity>
           </>
         )}
 
-        {/* Menú para el Administrador */}
+        {/* Menú administrador */}
         {isAdmin && (
           <>
-            <TouchableOpacity onPress={() => navigation.navigate('AdminMapScreen')}>
-              <Text
-                style={[
-                  styles.menuText,
-                  route.name === 'AdminMapScreen' && styles.activeText,
-                ]}
-              >
+            <TouchableOpacity onPress={() => navigation.navigate("AdminMapScreen")}>
+              <Text style={[styles.menuText, route.name === "AdminMapScreen" && styles.activeText]}>
                 Mapa
               </Text>
             </TouchableOpacity>
 
-            <TouchableOpacity onPress={() => navigation.navigate('AdminProfileScreen')}>
-              <Text
-                style={[
-                  styles.menuText,
-                  route.name === 'AdminProfileScreen' && styles.activeText,
-                ]}
-              >
+            <TouchableOpacity onPress={() => navigation.navigate("AdminProfileScreen")}>
+              <Text style={[styles.menuText, route.name === "AdminProfileScreen" && styles.activeText]}>
                 Perfil
               </Text>
             </TouchableOpacity>
