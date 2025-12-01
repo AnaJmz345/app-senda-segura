@@ -1,13 +1,20 @@
-import React from 'react';
+import React, { useEffect, useState,useCallback } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
 import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import { Ionicons, FontAwesome5 } from '@expo/vector-icons';
 import TopMenu from '../../components/TopMenu';
 import { useAuth } from '../../context/AuthContext'; 
 
+import { loadUserProfile } from '../../../controllers/BikerProfileController';
+import { supabase } from '../../lib/supabase';
+import { logInfo,logDebug } from '../../../utils/logger';
+
 
 export default function AdminProfileScreen({ navigation }) {
-  const {signOut} = useAuth();
-  
+  const {user,signOut} = useAuth();
+  const [profile, setProfile] = useState(null);
+
+
   const handleLogout = async () => {
     try {
       await signOut();
@@ -16,6 +23,18 @@ export default function AdminProfileScreen({ navigation }) {
       Alert.alert('Error', 'No se pudo cerrar la sesión. Intenta de nuevo.');
     }
   };
+
+  useFocusEffect(
+      useCallback(() => {
+        const load = async () => {
+          logInfo("RECARGANDO PERFIL DESDE SQLITE (pantalla volvió)");
+          const data = await loadUserProfile(user.id);
+          setProfile(data);
+        };
+  
+        load();
+      }, [])
+  );
 
 
   return (
@@ -26,15 +45,19 @@ export default function AdminProfileScreen({ navigation }) {
         {/* Imagen y nombre de perfil */}
         <View style={styles.profileSection}>
           <Image
-            source={{ uri: 'https://i.pinimg.com/736x/bc/98/0b/bc980b9e0bf723ac8393222ff0249da9.jpg' }} //futuro: permitir cambiar imagen de perfil
+            source={{
+              uri:
+                profile?.avatar_url ||
+                'https://i.pinimg.com/736x/bc/98/0b/bc980b9e0bf723ac8393222ff0249da9.jpg',
+            }}
             style={styles.profileImage}
           />
-          <Text style={styles.name}>Admin Name</Text>
+          <Text style={styles.name}>{profile?.real_display_name|| "Administrador"}</Text>
         </View>
 
         {/* Opciones de perfil */}
         <View style={styles.options}>
-          <TouchableOpacity style={styles.optionButton} onPress={() => navigation.navigate('EditAdminProfileScreen')}>
+          <TouchableOpacity style={styles.optionButton} onPress={() => navigation.navigate('EditBikerProfile')}>
             <Ionicons name="person-outline" size={24} color="black" />
             <Text style={styles.optionText}>Editar perfil</Text>
           </TouchableOpacity>

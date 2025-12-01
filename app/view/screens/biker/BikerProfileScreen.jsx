@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState,useCallback } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
 import { 
   View, 
   Text, 
@@ -24,16 +25,18 @@ export default function BikerProfileScreen({ navigation }) {
   const [loading, setLoading] = useState(true);
 
   // Cargar perfil desde SQLite
-  useEffect(() => {
-    const load = async () => {
-      logInfo("OBTENIENDO PERFIL DEL BIKER DESDE SQLITE");
-      const data = await loadUserProfile(user.id);
-      logDebug("PROFILE CARGADO: ",data)
-      setProfile(data);
-      
-    };
-    load();
-  }, []);
+ useFocusEffect(
+    useCallback(() => {
+      const load = async () => {
+        logInfo("RECARGANDO PERFIL DESDE SQLITE (pantalla volvió)");
+        const data = await loadUserProfile(user.id);
+        setProfile(data);
+      };
+
+      load();
+    }, [])
+  );
+
 
   //       RESEÑAS CON NOMBRE DE RUTA
   const loadReviews = async () => {
@@ -145,7 +148,7 @@ export default function BikerProfileScreen({ navigation }) {
           }}
           style={styles.profileImage}
         />
-        <Text style={styles.name}>{profile?.display_name || "Ciclista"}</Text>
+        <Text style={styles.name}>{profile?.real_display_name|| "Ciclista"}</Text>
       </View>
 
       {/* Opciones */}

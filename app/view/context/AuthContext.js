@@ -43,7 +43,7 @@ export function AuthProvider({ children }) {
   async function loadProfile(userId) {
     const { data, error } = await supabase
       .from('profiles')
-      .select('id, display_name, role, avatar_url, phone')
+      .select('id, display_name, role, avatar_url, phone,real_display_name')
       .eq('id', userId)
       .maybeSingle();
     if (!error) setProfile(data);

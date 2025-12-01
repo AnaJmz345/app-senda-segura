@@ -1,50 +1,58 @@
-import { getDB   } from "../view/lib/sqlite";
-import { logInfo,logError } from '../utils/logger';
-
+import { getDB } from "../view/lib/sqlite";
+import { logInfo, logError } from "../utils/logger";
 
 export async function getLocalProfileById(userId) {
   try {
     logInfo(`Buscando perfil local con id=${userId}`);
 
-     const db = await getDB();
+    const db = await getDB();
 
     const result = await db.getFirstAsync(
       "SELECT * FROM profiles WHERE id = ? LIMIT 1",
       [userId]
     );
 
-    logInfo("[MODEL] Perfil obtenido correctamente:", result);
+    logInfo("[MODEL] Perfil obtenido correctamente de sqlite:", result);
 
     return result || null;
 
   } catch (error) {
     logError(`[MODEL] Error obteniendo perfil local id=${userId}`, error);
-    throw error; // lo vuelves a lanzar para manejarlo arriba si quieres
+    throw error;
   }
 }
 
 export async function saveLocalProfile(profile) {
   try {
-    logInfo(`Guardando perfil local con id=${profile.id}`);
+    const db = await getDB();
 
-     await db.runAsync(
+    logInfo("[MODEL] Valores que se guardarán en sqlite:", profile);
+
+    await db.runAsync(
       `INSERT OR REPLACE INTO profiles 
-       (id, display_name, phone, avatar_url, is_synced)
-       VALUES (?, ?, ?, ?, ?)`,
+       (id, display_name, phone, avatar_url, is_synced, real_display_name)
+       VALUES (?, ?, ?, ?, ?, ?)`,
       [
         profile.id,
-        profile.display_name ?? null,
+        profile.display_name ?? null,       // correo
         profile.phone ?? null,
         profile.avatar_url ?? null,
         profile.is_synced ?? 1,
+        profile.real_display_name ?? null,  // nombre real
       ]
     );
 
-    logInfo(`Perfil guardado correctamente con id=${profile.id}`);
+    logInfo(`Perfil LOCAL guardado correctamente con id=${profile.id}`);
+
+    // 👇 COMPROBACIÓN INMEDIATA
+    const check = await db.getFirstAsync(
+      "SELECT * FROM profiles WHERE id = ? LIMIT 1",
+      [profile.id]
+    );
+    logInfo("[MODEL] Perfil en sqlite DESPUÉS de guardar:", check);
 
   } catch (error) {
     logError(`Error guardando perfil local id=${profile.id}`, error);
     throw error;
   }
 }
-

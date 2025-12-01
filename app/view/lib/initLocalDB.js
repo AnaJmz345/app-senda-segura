@@ -1,5 +1,6 @@
 import { executeSql } from "./sqlite";
 
+
 import arenosas from "../../../assets/routes/arenosas.json";
 import bosque from "../../../assets/routes/bosque-nutella.json";
 import brujas from "../../../assets/routes/brujas.json";
@@ -45,9 +46,11 @@ export async function initLocalDB() {
         display_name TEXT,
         phone TEXT,
         avatar_url TEXT,
-        is_synced INTEGER DEFAULT 0
+        is_synced INTEGER DEFAULT 0,
+        real_display_name TEXT
       );
     `);
+
 
     await executeSql(`
       CREATE TABLE IF NOT EXISTS medical_profiles (

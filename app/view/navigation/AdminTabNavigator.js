@@ -2,7 +2,7 @@ import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import AdminProfileScreen from '../screens/admin/AdminProfileScreen';
 import AdminMapScreen from '../screens/admin/AdminMapScreen';
-import EditAdminProfileScreen from '../screens/admin/EditAdminProfileScreen';
+import EditBikerProfile from '../screens/biker/EditBikerProfile';
 import ManageParamedicsScreen from '../screens/admin/ManageParamedicsScreen';
 import MedicalHistoryRecordsScreen from '../screens/admin/MedicalHistoryRecordsScreen';
 const Stack = createNativeStackNavigator();
@@ -20,9 +20,8 @@ export default function AdminTabNavigator() {
           component={AdminProfileScreen}
         />
         <Stack.Screen 
-          name="EditAdminProfileScreen"
-          component={EditAdminProfileScreen}
-        />
+          name="EditBikerProfile" 
+          component={EditBikerProfile} />
         <Stack.Screen 
           name="ManageParamedics"
           component={ManageParamedicsScreen}

@@ -1,5 +1,5 @@
 import { logger, consoleTransport } from "react-native-logs";
-import { saveLogToDB } from "../models/LogModel"; // la función SQLite
+import { saveLogToDB } from "../models/LogModel";
 
 // Niveles de log
 const logLevels = {
@@ -11,25 +11,35 @@ const logLevels = {
 
 const colorTransport = consoleTransport;
 
-
+// Guardar solo logs de error en SQLite
 const sqliteTransport = async (props) => {
   const { level, msg } = props;
-  //await saveLogToDB(level.text, msg);  // Aquí guardamos REAL al SQLite
 
-  //Solo guardaa los logs de error
   if (level.severity === logLevels.error) {
     await saveLogToDB(level.text, msg);
   }
 };
 
-// Instancia del logger
+// Función para formatear argumentos (objetos, strings, errores, etc)
+function formatArgs(args) {
+  return args
+    .map((a) => {
+      if (a instanceof Error) {
+        return `${a.message}\n${a.stack}`;
+      }
+      if (typeof a === "object") {
+        return JSON.stringify(a, null, 2);
+      }
+      return String(a);
+    })
+    .join(" ");
+}
+
+// Crear logger
 const customLogger = logger.createLogger({
   transport: (props) => {
-    // Consola con colores
-    colorTransport(props);
-
-    // Guardar en SQLite
-    sqliteTransport(props);
+    colorTransport(props);   // consola con colores
+    sqliteTransport(props);  // guardar errores en SQLite
   },
   transportOptions: {
     colors: {
@@ -48,9 +58,24 @@ const customLogger = logger.createLogger({
   enabled: true,
 });
 
-export function logInfo(msg) { customLogger.info(msg); }
-export function logWarn(msg) { customLogger.warn(msg); }
-export function logError(msg) { customLogger.error(msg); }
-export function logDebug(msg) { customLogger.debug(msg); }
+// =============================
+//   FUNCIONES DE LOG PUBLICAS
+// =============================
+
+export function logDebug(...args) {
+  customLogger.debug(formatArgs(args));
+}
+
+export function logInfo(...args) {
+  customLogger.info(formatArgs(args));
+}
+
+export function logWarn(...args) {
+  customLogger.warn(formatArgs(args));
+}
+
+export function logError(...args) {
+  customLogger.error(formatArgs(args));
+}
 
 export default customLogger;
