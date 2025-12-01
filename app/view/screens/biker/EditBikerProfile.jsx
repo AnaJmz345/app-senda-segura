@@ -85,7 +85,14 @@ export default function EditBikerProfile({ navigation }) {
             source={{ uri: editProfile.avatar_url || 'https://i.pinimg.com/736x/bc/98/0b/bc980b9e0bf723ac8393222ff0249da9.jpg' }}
             style={styles.profileImage}
           />
+
+          {isEditing && (
+            <TouchableOpacity style={styles.editIcon} onPress={handlePickImage}>
+              <Ionicons name="camera" size={22} color="#fff" />
+            </TouchableOpacity>
+          )}
         </View>
+
 
         <Text style={styles.label}>Nombre del perfil</Text>
         <TextInput
@@ -158,4 +165,24 @@ const styles = StyleSheet.create({
 
   profileImage: { width: 150, height: 150, borderRadius: 75 },
   profileSection: { alignItems: 'center', margin: 20 },
+  profileSection: {
+  alignItems: 'center',
+  margin: 20,
+  position: 'relative',
+},
+profileImage: {
+  width: 150,
+  height: 150,
+  borderRadius: 75,
+},
+editIcon: {
+  position: 'absolute',
+  bottom: 10,       // ⬅️ Ajusta según te guste
+  right: 10,        // ⬅️ Lo coloca en la esquina
+  backgroundColor: '#D19761',
+  padding: 8,
+  borderRadius: 20,
+  elevation: 5,
+},
+
 });
