@@ -5,6 +5,7 @@ import ActiveBikersScreen from '../screens/paramedic/ActiveBikersScreen';
 import CasesHistory from '../screens/paramedic/CasesHistory';
 import EmergencyCall from '../screens/paramedic/EmergencyCall';
 import RegisterNewCaseScreen from '../screens/paramedic/RegisterNewCaseScreen';
+import EditBikerProfile from '../screens/biker/EditBikerProfile';
 const Stack = createNativeStackNavigator();
 
 
@@ -37,6 +38,10 @@ export default function ParamedicTabNavigator({ navigation }) {
           name="EmergencyCall" 
           component={EmergencyCall}
           navigation={navigation}
+        />
+        <Stack.Screen 
+          name="EditBikerProfile" 
+          component={EditBikerProfile} 
         />
 
     </Stack.Navigator>

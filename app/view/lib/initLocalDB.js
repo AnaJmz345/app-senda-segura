@@ -65,6 +65,13 @@ export async function initLocalDB() {
         age INTEGER
       );
     `);
+    await executeSql(`
+      CREATE TABLE IF NOT EXISTS paramedic_status (
+        user_id TEXT PRIMARY KEY,
+        is_active INTEGER DEFAULT 0
+      );
+    `);
+
 
     await executeSql(`
       CREATE TABLE IF NOT EXISTS logs (
