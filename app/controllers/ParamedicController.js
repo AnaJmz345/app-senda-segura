@@ -5,9 +5,7 @@ import {
   saveLocalParamedicStatus
 } from '../models/ParamedicStatusModel';
 
-// ===========================
-//  CARGAR ESTADO (LECTURA)
-// ===========================
+
 export async function loadParamedicStatus(userId) {
   try {
     logInfo(`[PARAMEDIC] Cargando estado id=${userId}`);
@@ -49,7 +47,7 @@ export async function loadParamedicStatus(userId) {
       return remoteValue;
     }
 
-    // (C) Si Supabase tiene dato válido → usar ese como fuente de verdad
+    // (C) Si Supabase tiene dato válido → usar ese 
     if (data && typeof data.is_active !== "undefined" && data.is_active !== null) {
       const remoteValue = data.is_active === 1 || data.is_active === true;
       logInfo("[CONTROLLER] Sincronizando desde Supabase:", remoteValue);
@@ -62,7 +60,7 @@ export async function loadParamedicStatus(userId) {
       return remoteValue;
     }
 
-    // (D) Fallback: mantener valor local
+   
     return local;
   } catch (err) {
     logError("[PARAMEDIC] Error en loadParamedicStatus:", err);
@@ -77,9 +75,6 @@ export async function loadParamedicStatus(userId) {
 }
 
 
-// ===========================
-//  ACTUALIZAR ESTADO
-// ===========================
 export async function updateParamedicStatus(userId, newValue) {
   try {
     logInfo(`[PARAMEDIC] Actualizando estado a ${newValue} para ${userId}`);
@@ -118,9 +113,6 @@ export async function updateParamedicStatus(userId, newValue) {
 }
 
 
-// ===========================
-//  SINCRONIZACIÓN MANUAL (OPCIONAL)
-// ===========================
 export async function syncParamedicStatus(userId) {
   try {
     logInfo(`[PARAMEDIC] Sincronización manual para ${userId}`);

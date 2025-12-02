@@ -51,7 +51,7 @@ export default function ParamedicProfileScreen({ navigation }) {
     try {
       setUpdatingStatus(true);
       
-      // Actualizar UI optimísticamente
+     
       setIsActive(value);
       
       // Actualizar en backend
@@ -83,11 +83,11 @@ export default function ParamedicProfileScreen({ navigation }) {
   };
 
   const handleLogout = async () => {
+  if (isActive) {
+    // Mostrar advertencia SOLO cuando está activo
     Alert.alert(
       "Cerrar sesión",
-      isActive 
-        ? "Actualmente estás en turno activo. ¿Deseas cerrar sesión de todas formas? Tu estado se mantendrá para la próxima vez que inicies sesión."
-        : "¿Estás seguro de que deseas cerrar sesión?",
+      "Actualmente estás en turno activo. ¿Deseas cerrar sesión de todas formas? Tu estado se mantendrá para la próxima vez que inicies sesión.",
       [
         { text: "Cancelar", style: "cancel" },
         {
@@ -104,7 +104,17 @@ export default function ParamedicProfileScreen({ navigation }) {
         }
       ]
     );
-  };
+  } else {
+    // Si NO está activo → cerrar sesión sin preguntar
+    try {
+      await signOut();
+    } catch (error) {
+      logError('[PARAMEDIC] Error cerrando sesión:', error);
+      Alert.alert('Error', 'No se pudo cerrar la sesión. Intenta de nuevo.');
+    }
+  }
+};
+
 
   if (loading) {
     return (
