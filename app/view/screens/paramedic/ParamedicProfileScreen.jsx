@@ -1,99 +1,119 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
-import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView, Switch, Alert } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView, Switch, Alert, ActivityIndicator } from 'react-native';
 import { Ionicons, FontAwesome5, MaterialIcons } from '@expo/vector-icons';
 import { useAuth } from '../../context/AuthContext';
 import TopMenu from '../../components/TopMenu';
-import { supabase } from '../../lib/supabase';
 import { COLORS } from '../../constants/colors';
 import { loadUserProfile } from '../../../controllers/BikerProfileController';
-import { logInfo,logDebug } from '../../../utils/logger';
+import { loadParamedicStatus, updateParamedicStatus } from '../../../controllers/ParamedicController';
+import { logInfo, logError } from '../../../utils/logger';
 
 export default function ParamedicProfileScreen({ navigation }) {
-  const { user,signOut  } = useAuth();
+  const { user, signOut } = useAuth();
   const [profile, setProfile] = useState(null);
   const [isActive, setIsActive] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [updatingStatus, setUpdatingStatus] = useState(false);
 
   useFocusEffect(
     useCallback(() => {
       const load = async () => {
-        logInfo("RECARGANDO PERFIL DESDE SQLITE (pantalla volvió)");
-        const data = await loadUserProfile(user.id);
-        setProfile(data);
+        try {
+          setLoading(true);
+          logInfo("[PARAMEDIC] Recargando perfil y estado");
+
+          // 1) Perfil local desde SQLite
+          const data = await loadUserProfile(user.id);
+          setProfile(data);
+
+          // 2) Estado del paramédico (sincroniza SQLite y Supabase)
+          const active = await loadParamedicStatus(user.id);
+          setIsActive(active);
+          
+          logInfo("[PARAMEDIC] Estado cargado:", active);
+        } catch (err) {
+          logError("[PARAMEDIC] Error cargando pantalla de perfil", err);
+          Alert.alert("Error", "No se pudo cargar la información del paramédico");
+        } finally {
+          setLoading(false);
+        }
       };
 
       load();
-    }, []) 
+    }, [user.id])
   );
 
-/*
-  const loadParamedicData = async () => {
+  const toggleActiveStatus = async (value) => {
+    // Prevenir múltiples actualizaciones simultáneas
+    if (updatingStatus) return;
+
     try {
-      // Obtener perfil del usuario
-      const local = await loadUserProfile(user.id);
-    setProfile(local);
-      if (profileError) throw profileError;
-      setProfile(profileData);
-
-      // Obtener o crear estado del paramédico
-      let { data: statusData, error: statusError } = await supabase
-        .from('paramedic_status')
-        .select('is_active')
-        .eq('user_id', user.id)
-        .single();
-
-      if (statusError && statusError.code === 'PGRST116') {
-        // No existe registro, crear uno
-        const { data: newStatus, error: insertError } = await supabase
-          .from('paramedic_status')
-          .insert([{ user_id: user.id, is_active: false }])
-          .select()
-          .single();
-
-        if (insertError) throw insertError;
-        setIsActive(newStatus.is_active);
-      } else if (statusError) {
-        throw statusError;
-      } else {
-        setIsActive(statusData.is_active);
-      }
-    } catch (error) {
-      console.error('Error loading paramedic data:', error);
-      Alert.alert('Error', 'No se pudo cargar la información del paramédico');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const toggleActiveStatus = async (newValue) => {
-    try {
-      const { error } = await supabase
-        .from('paramedic_status')
-        .update({ is_active: newValue })
-        .eq('user_id', user.id);
-
-      if (error) throw error;
-
-      setIsActive(newValue);
+      setUpdatingStatus(true);
+      
+      // Actualizar UI optimísticamente
+      setIsActive(value);
+      
+      // Actualizar en backend
+      await updateParamedicStatus(user.id, value);
+      
+      logInfo("[PARAMEDIC] Estado actualizado exitosamente a:", value);
+      
       Alert.alert(
-        'Estado actualizado',
-        newValue ? 'Turno iniciado. Ahora estás activo.' : 'Turno finalizado. Ahora estás inactivo.'
+        value ? "✓ Turno iniciado" : "○ Turno finalizado",
+        value 
+          ? "Ahora estás activo y disponible para atender emergencias." 
+          : "Ahora estás inactivo. No aparecerás en la lista de paramédicos disponibles.",
+        [{ text: "Entendido" }]
       );
-    } catch (error) {
-      console.error('Error updating status:', error);
-      Alert.alert('Error', 'No se pudo actualizar el estado');
+    } catch (err) {
+      logError("[PARAMEDIC] Error al cambiar estado", err);
+      
+      // Revertir UI en caso de error
+      setIsActive(!value);
+      
+      Alert.alert(
+        "Error de conexión", 
+        "No se pudo actualizar el estado. El cambio se guardó localmente y se sincronizará cuando haya conexión.",
+        [{ text: "OK" }]
+      );
+    } finally {
+      setUpdatingStatus(false);
     }
   };
-*/
+
   const handleLogout = async () => {
-    try {
-      await signOut();
-    } catch (error) {
-      console.error('Error signing out:', error);
-      Alert.alert('Error', 'No se pudo cerrar la sesión. Intenta de nuevo.');
-    }
+    Alert.alert(
+      "Cerrar sesión",
+      isActive 
+        ? "Actualmente estás en turno activo. ¿Deseas cerrar sesión de todas formas? Tu estado se mantendrá para la próxima vez que inicies sesión."
+        : "¿Estás seguro de que deseas cerrar sesión?",
+      [
+        { text: "Cancelar", style: "cancel" },
+        {
+          text: "Cerrar sesión",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              await signOut();
+            } catch (error) {
+              logError('[PARAMEDIC] Error cerrando sesión:', error);
+              Alert.alert('Error', 'No se pudo cerrar la sesión. Intenta de nuevo.');
+            }
+          }
+        }
+      ]
+    );
   };
+
+  if (loading) {
+    return (
+      <View style={[styles.container, styles.centerContent]}>
+        <ActivityIndicator size="large" color={COLORS.mediumGreen} />
+        <Text style={styles.loadingText}>Cargando perfil...</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
@@ -101,21 +121,20 @@ export default function ParamedicProfileScreen({ navigation }) {
         <TopMenu navigation={navigation} />
 
         <View style={styles.profileSection}>
-         <Image
+          <Image
             source={{
-              uri:
-                profile?.avatar_url ||
+              uri: profile?.avatar_url || 
                 'https://i.pinimg.com/736x/bc/98/0b/bc980b9e0bf723ac8393222ff0249da9.jpg',
             }}
             style={styles.profileImage}
           />
-          <Text style={styles.name}>{profile?.real_display_name|| "Paramédico"}</Text>
+          <Text style={styles.name}>{profile?.real_display_name || "Paramédico"}</Text>
           <Text style={styles.subtitle}>
             Gracias por tu servicio, {profile?.real_display_name || 'Paramédico'}. Tu ayuda es importante y marca la diferencia.
           </Text>
         </View>
 
-        {/* Estado de turno 
+        {/* Estado de turno */}
         <View style={styles.statusCard}>
           <View style={styles.statusHeader}>
             <MaterialIcons 
@@ -124,7 +143,15 @@ export default function ParamedicProfileScreen({ navigation }) {
               color={isActive ? COLORS.mediumGreen : COLORS.darkGray} 
             />
             <Text style={styles.statusTitle}>Estado de turno</Text>
+            {updatingStatus && (
+              <ActivityIndicator 
+                size="small" 
+                color={COLORS.mediumGreen} 
+                style={styles.statusLoader}
+              />
+            )}
           </View>
+          
           <View style={styles.statusToggle}>
             <Text style={[styles.statusText, !isActive && styles.statusTextActive]}>
               Inactivo
@@ -134,18 +161,19 @@ export default function ParamedicProfileScreen({ navigation }) {
               thumbColor={isActive ? COLORS.mediumGreen : '#9CA3AF'}
               onValueChange={toggleActiveStatus}
               value={isActive}
+              disabled={updatingStatus}
             />
             <Text style={[styles.statusText, isActive && styles.statusTextActive]}>
               Activo
             </Text>
           </View>
+          
           <Text style={styles.statusDescription}>
             {isActive 
               ? '✓ Estás disponible para atender emergencias' 
-              : '○ No aparecerás en la lista de paramédicos activos.'}
+              : '○ No aparecerás en la lista de paramédicos activos'}
           </Text>
         </View>
-        */}
 
         <View style={styles.options}>
           <TouchableOpacity
@@ -172,7 +200,10 @@ export default function ParamedicProfileScreen({ navigation }) {
             <Text style={styles.optionText}>Ver historial de casos</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.optionButton} onPress={() => navigation.navigate('EditBikerProfile')}>
+          <TouchableOpacity 
+            style={styles.optionButton} 
+            onPress={() => navigation.navigate('EditBikerProfile')}
+          >
             <Ionicons name="person-outline" size={24} color="black" />
             <Text style={styles.optionText}>Editar perfil</Text>
           </TouchableOpacity>
@@ -191,6 +222,15 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#F8F8F8',
+  },
+  centerContent: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingText: {
+    marginTop: 10,
+    fontSize: 16,
+    color: '#666',
   },
   content: {
     alignItems: 'center',
@@ -242,6 +282,10 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     marginLeft: 10,
     color: '#333',
+    flex: 1,
+  },
+  statusLoader: {
+    marginLeft: 10,
   },
   statusToggle: {
     flexDirection: 'row',
