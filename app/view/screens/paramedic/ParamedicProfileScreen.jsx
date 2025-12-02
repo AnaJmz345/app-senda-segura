@@ -6,28 +6,33 @@ import { useAuth } from '../../context/AuthContext';
 import TopMenu from '../../components/TopMenu';
 import { supabase } from '../../lib/supabase';
 import { COLORS } from '../../constants/colors';
+import { loadUserProfile } from '../../../controllers/BikerProfileController';
+import { logInfo,logDebug } from '../../../utils/logger';
 
 export default function ParamedicProfileScreen({ navigation }) {
-  const { signOut, user } = useAuth();
+  const { user,signOut  } = useAuth();
   const [profile, setProfile] = useState(null);
   const [isActive, setIsActive] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useFocusEffect(
     useCallback(() => {
-      loadParamedicData();
-    }, [user])
+      const load = async () => {
+        logInfo("RECARGANDO PERFIL DESDE SQLITE (pantalla volvió)");
+        const data = await loadUserProfile(user.id);
+        setProfile(data);
+      };
+
+      load();
+    }, []) 
   );
 
+/*
   const loadParamedicData = async () => {
     try {
       // Obtener perfil del usuario
-      const { data: profileData, error: profileError } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', user.id)
-        .single();
-
+      const local = await loadUserProfile(user.id);
+    setProfile(local);
       if (profileError) throw profileError;
       setProfile(profileData);
 
@@ -80,7 +85,7 @@ export default function ParamedicProfileScreen({ navigation }) {
       Alert.alert('Error', 'No se pudo actualizar el estado');
     }
   };
-
+*/
   const handleLogout = async () => {
     try {
       await signOut();
@@ -96,17 +101,21 @@ export default function ParamedicProfileScreen({ navigation }) {
         <TopMenu navigation={navigation} />
 
         <View style={styles.profileSection}>
-          <Image
-            source={{ uri: profile?.avatar_url || 'https://via.placeholder.com/100' }}
+         <Image
+            source={{
+              uri:
+                profile?.avatar_url ||
+                'https://i.pinimg.com/736x/bc/98/0b/bc980b9e0bf723ac8393222ff0249da9.jpg',
+            }}
             style={styles.profileImage}
           />
-          <Text style={styles.name}>{profile?.display_name || 'Paramédico'}</Text>
+          <Text style={styles.name}>{profile?.real_display_name|| "Paramédico"}</Text>
           <Text style={styles.subtitle}>
-            Gracias por tu servicio, {profile?.display_name?.split(' ')[0] || 'Paramédico'}. Tu ayuda es importante y marca la diferencia.
+            Gracias por tu servicio, {profile?.real_display_name || 'Paramédico'}. Tu ayuda es importante y marca la diferencia.
           </Text>
         </View>
 
-        {/* Estado de turno */}
+        {/* Estado de turno 
         <View style={styles.statusCard}>
           <View style={styles.statusHeader}>
             <MaterialIcons 
@@ -136,6 +145,7 @@ export default function ParamedicProfileScreen({ navigation }) {
               : '○ No aparecerás en la lista de paramédicos activos.'}
           </Text>
         </View>
+        */}
 
         <View style={styles.options}>
           <TouchableOpacity
@@ -160,6 +170,11 @@ export default function ParamedicProfileScreen({ navigation }) {
           >
             <MaterialIcons name="history" size={24} color="black" />
             <Text style={styles.optionText}>Ver historial de casos</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.optionButton} onPress={() => navigation.navigate('EditBikerProfile')}>
+            <Ionicons name="person-outline" size={24} color="black" />
+            <Text style={styles.optionText}>Editar perfil</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
