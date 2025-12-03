@@ -13,7 +13,7 @@ import MapView, { Polyline, Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import { Ionicons, FontAwesome5, MaterialIcons } from '@expo/vector-icons';
 import TopMenu from '../../components/TopMenu';
 import { executeSql } from '../../lib/sqlite';
-import { MapMarkerController } from '../../controllers/MapMarkerController';
+import { MapMarkerController } from '../../../controllers/MapMarkerController';
 
 const { width, height } = Dimensions.get('window');
 
