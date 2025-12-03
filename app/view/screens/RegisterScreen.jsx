@@ -1,6 +1,8 @@
 //import { logInfo, logWarn, logError } from '../../utils/logger';
 
 import React, { useState } from 'react';
+import DateTimePicker from "@react-native-community/datetimepicker";
+
 import { 
   View, 
   Text, 
@@ -30,6 +32,8 @@ export default function RegisterScreen() {
   const [birth, setBirth] = useState('');
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [showDatePicker, setShowDatePicker] = useState(false);
+
 
   const handleRegister = async () => {
     if (!name || !lastName || !email || !pwd || !birth) {
@@ -133,13 +137,31 @@ export default function RegisterScreen() {
                   />
                 </TouchableOpacity>
               </View>
-              <TextInput 
-                placeholder="Fecha de nacimiento" 
-                value={birth} 
-                onChangeText={setBirth} 
-                style={styles.input} 
-                placeholderTextColor="#ccc" 
-              />
+             <TouchableOpacity 
+  onPress={() => setShowDatePicker(true)}
+  style={styles.input}
+>
+  <Text style={{ color: birth ? COLORS.darkGreen : "#ccc" }}>
+    {birth || "Fecha de nacimiento"}
+  </Text>
+</TouchableOpacity>
+
+{showDatePicker && (
+  <DateTimePicker
+    value={birth ? new Date(birth) : new Date(2000, 0, 1)}
+    mode="date"
+    display="spinner"   // Puedes poner: "default", "calendar", "spinner", "compact"
+    maximumDate={new Date()} // No permite fechas futuras
+    onChange={(event, selectedDate) => {
+      setShowDatePicker(false);
+      if (selectedDate) {
+        const formatted = selectedDate.toISOString().split("T")[0];
+        setBirth(formatted);
+      }
+    }}
+  />
+)}
+
 
               <TouchableOpacity 
                 style={styles.button} 

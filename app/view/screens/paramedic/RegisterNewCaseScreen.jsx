@@ -5,6 +5,7 @@ import { COLORS } from '../../constants/colors';
 import { useAuth } from '../../context/AuthContext';
 import { ParamedicCaseController } from '../../../controllers/ParamedicCaseController';
 import { ParamedicCaseModel } from '../../../models/ParamedicCaseModel';
+import { Ionicons } from '@expo/vector-icons';
 
 const RegisterNewCaseScreen = ({ navigation }) => {
   const { user } = useAuth();
@@ -69,6 +70,11 @@ const RegisterNewCaseScreen = ({ navigation }) => {
   return (
     <SafeAreaView style={styles.safeArea}>
       <ScrollView style={styles.container}>
+        <View style={styles.backButtonContainer}>
+        <TouchableOpacity style={styles.button} onPress={() => navigation.goBack()}>
+          <Ionicons name="chevron-back" size={20} color="black" />
+        </TouchableOpacity>
+      </View>
         <View style={styles.header}>
           <Text style={styles.headerText}>Registrar caso nuevo</Text>
         </View>
@@ -146,9 +152,16 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: COLORS.white,
   },
+  backButtonContainer: { position: 'absolute', top: -50, left: -10 },
+  button: {
+    backgroundColor: '#D19761',
+    padding: 3,
+    borderRadius: 3,
+    elevation: 0,
+  },
   container: {
     flex: 1,
-    padding: 20,
+    padding: 30,
     backgroundColor: COLORS.white,
   },
   header: {
@@ -157,16 +170,19 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   headerText: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: COLORS.darkGreen,
-    marginLeft: 10,
+  paddingLeft: 60,
+  paddingTop: 10,
+  fontSize: 24,
+  fontWeight: "bold",
+  color: COLORS.darkGreen,
+  textAlign: "center",
   },
+
   label: {
     fontSize: 16,
     color: COLORS.black,
     marginBottom: 5,
-    marginTop: 10,
+    marginTop: 60,
   },
   input: {
     backgroundColor: COLORS.white,
