@@ -204,7 +204,7 @@ export default function ParamedicProfileScreen({ navigation }) {
 
           <TouchableOpacity
             style={styles.optionButton}
-            onPress={() => navigation.navigate('EmergencyCallsHistory')}
+            onPress={() => navigation.navigate('CasesHistory')}
           >
             <MaterialIcons name="history" size={24} color="black" />
             <Text style={styles.optionText}>Ver historial de casos</Text>
