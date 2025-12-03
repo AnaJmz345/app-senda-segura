@@ -4,6 +4,7 @@ import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView, Switch, Al
 import { Ionicons, FontAwesome5, MaterialIcons } from '@expo/vector-icons';
 import { useAuth } from '../../context/AuthContext';
 import TopMenu from '../../components/TopMenu';
+import EmergencyCard from '../../components/EmergencyCard';
 import { COLORS } from '../../constants/colors';
 import { loadUserProfile } from '../../../controllers/BikerProfileController';
 import { loadParamedicStatus, updateParamedicStatus } from '../../../controllers/ParamedicController';

@@ -386,7 +386,7 @@ export default function BikerMapScreen({ navigation }) {
          <SOSEmergencyButton navigation={navigation}
         currentRoute={selectedRoute} />
       </Animated.View>
-      <StartRouteButton />
+      <StartRouteButton selectedRoute={selectedRoute} />
     </View>
   );
 }
