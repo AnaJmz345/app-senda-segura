@@ -3,35 +3,57 @@ import { supabase } from '../view/lib/supabase';
 export const BikerSessionModel = {
   async getActiveSession(bikerId) {
     try {
-        await supabase
-            .from('biker_sessions')
-            .update({ status: 'inactive' })
-            .eq('biker_id', user.id)
-            .eq('status', 'active');
+      const { data, error } = await supabase
+        .from('biker_sessions')
+        .select('*')
+        .eq('biker_id', bikerId)
+        .eq('status', 'active')
+        .single();
 
-        // Ahora insertamos la nueva sesión
-        const { data, error } = await supabase
-            .from("biker_sessions")
-            .insert([
-        {
-      biker_id: user.id,
-      status: "active",
-      last_location: {
-    
-        type: "Point",
-        coordinates: [coords.longitude, coords.latitude],
-      },
-      started_at: new Date().toISOString(),
-    },
-  ])
-  .select()
-  .single();
+      if (error) {
+        // Si no hay sesión activa, retornar null
+        if (error.code === 'PGRST116') {
+          return null;
+        }
+        throw error;
+      }
+      
+      return data;
+    } catch (err) {
+      console.error('Error obteniendo sesión activa:', err);
+      throw err;
+    }
+  },
 
+  // Iniciar nueva sesión (NUEVA FUNCIÓN)
+  async startSession(bikerId, coords) {
+    try {
+      // Desactivar sesiones previas
+      await supabase
+        .from('biker_sessions')
+        .update({ status: 'inactive' })
+        .eq('biker_id', bikerId)
+        .eq('status', 'active');
+
+      // Crear nueva sesión
+      const { data, error } = await supabase
+        .from("biker_sessions")
+        .insert([{
+          biker_id: bikerId,
+          status: "active",
+          last_location: {
+            type: "Point",
+            coordinates: [coords.longitude, coords.latitude],
+          },
+          started_at: new Date().toISOString(),
+        }])
+        .select()
+        .single();
 
       if (error) throw error;
       return data;
     } catch (err) {
-      console.error('Error obteniendo sesión activa:', err);
+      console.error('Error iniciando sesión:', err);
       throw err;
     }
   },
