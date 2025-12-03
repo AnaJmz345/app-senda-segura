@@ -10,3 +10,5 @@ Para esta app hay 2 flujos diferentes, uno para en dado caso de que sea ciclista
     https://www.figma.com/proto/vUvCJQIEunByCSkXi82lVT/SendaSegura_Design?node-id=0-1&p=f&t=ILqTnOXgMbpoaHkV-0&scaling=scale-down&content-scaling=fixed&starting-point-node-id=122%3A397&show-proto-sidebar=1
   
 Link al documento con las pruebas de cada integrante del equipo de haber clonado el repositorio de forma local: https://docs.google.com/document/d/1ajQDjIP0qMeIqj4lZ5luZ5k-BH1iNA_Kqfhgp_Escc0/edit?usp=sharing
+
+VIDEO DEMO FINAL: https://youtu.be/Pb2GwW4FqiU

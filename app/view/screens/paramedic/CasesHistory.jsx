@@ -1,17 +1,22 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView } from 'react-native';
+import { View, StyleSheet, SafeAreaView } from 'react-native';
+import TopMenu from '../../components/TopMenu';
+import CaseHistoryList from '../../components/CaseHistoryList';
+import { useAuth } from '../../context/AuthContext';
 
-import { Ionicons, FontAwesome5 } from '@expo/vector-icons';
-import TopMenu from '../../components/TopMenu'
 export default function CasesHistory({ navigation }) {
-  return (
-    <View style={styles.container}>
+  const { user } = useAuth();
 
-      <ScrollView contentContainerStyle={styles.content}>
-        <TopMenu navigation ={navigation}></TopMenu>
-        
-      </ScrollView>
-    </View>
+  return (
+    <SafeAreaView style={styles.container}>
+      <TopMenu navigation={navigation} />
+      <View style={styles.content}>
+        <CaseHistoryList 
+          paramedicId={user?.id} 
+          showAllParamedics={false} 
+        />
+      </View>
+    </SafeAreaView>
   );
 }
 
@@ -21,6 +26,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#F8F8F8',
   },
   content: {
-    flexGrow: 1,
+    flex: 1,
   },
 });
