@@ -14,6 +14,8 @@ import { Ionicons, FontAwesome5, MaterialIcons } from '@expo/vector-icons';
 import TopMenu from '../../components/TopMenu';
 import { executeSql } from '../../lib/sqlite';
 import StartRouteButton from "./StartRouteButton";
+import SOSEmergencyButton from "./SOSEmergencyButton";
+
 
 
 const { width, height } = Dimensions.get('window');
@@ -370,6 +372,7 @@ export default function BikerMapScreen({ navigation }) {
             </Text>
           </TouchableOpacity>
         </ScrollView>
+         <SOSEmergencyButton onPress={() => navigation.navigate("SOSEmergencyCallScreen")} />
       </Animated.View>
       <StartRouteButton />
     </View>

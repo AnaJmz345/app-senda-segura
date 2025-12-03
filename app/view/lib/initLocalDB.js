@@ -71,6 +71,26 @@ export async function initLocalDB() {
         is_active INTEGER DEFAULT 0
       );
     `);
+//not sure 
+    await executeSql(`
+      CREATE TABLE IF NOT EXISTS last_locations (
+        user_id TEXT PRIMARY KEY,
+        latitude REAL,
+        longitude REAL,
+        updated_at TEXT
+      );
+`   );
+    await executeSql(`
+      CREATE TABLE IF NOT EXISTS pending_emergencies (
+        id TEXT PRIMARY KEY,
+        user_id TEXT,
+        route_type TEXT,
+        latitude REAL,
+        longitude REAL,
+        created_at TEXT
+  );
+`);
+
 
 
     await executeSql(`

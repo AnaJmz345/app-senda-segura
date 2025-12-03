@@ -10,6 +10,8 @@ import EmergencyContacts from '../screens/biker/EmergencyContacts';
 import BikerRouteDetail from '../screens/biker/BikerRouteDetail';
 import RateRouteScreen from '../screens/biker/RateRouteScreen';
 import RouteReviews from '../screens/biker/RouteReviews';
+import EmergencyScreen from "../screens/biker/SOSEmergencyCallScreen";
+
 
 const Stack = createNativeStackNavigator();
 
@@ -29,6 +31,8 @@ export default function BikerTabNavigator({ navigation }) {
       <Stack.Screen name="BikerMedicalDataForm" component={BikerMedicalDataForm} />
       <Stack.Screen name="EditBikerProfile" component={EditBikerProfile} />
       <Stack.Screen name="EmergencyContacts" component={EmergencyContacts} />
+      <Stack.Screen name="SOSEmergencyCallScreen" component={EmergencyScreen} />
+
     </Stack.Navigator>
   );
 }
