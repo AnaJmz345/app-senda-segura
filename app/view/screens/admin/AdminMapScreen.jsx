@@ -4,7 +4,7 @@ import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import { FontAwesome5, MaterialIcons } from '@expo/vector-icons';
 import TopMenu from '../../components/TopMenu';
 import AddMarkerModal from '../../components/AddMarkerModal';
-import { MapMarkerController } from '../../controllers/MapMarkerController';
+import { MapMarkerController } from '../../../controllers/MapMarkerController';
 import { useAuth } from '../../context/AuthContext';
 import { COLORS } from '../../constants/colors';
 
