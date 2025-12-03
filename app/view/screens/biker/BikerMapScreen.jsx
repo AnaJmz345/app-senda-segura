@@ -24,6 +24,7 @@ export default function BikerMapScreen({ navigation }) {
   const [loading, setLoading] = useState(true);
   const [selectedRoute, setSelectedRoute] = useState(null);
   const [dbStatus, setDbStatus] = useState('checking');
+  const [markers, setMarkers] = useState([]);
   const mapRef = useRef(null);
   const fadeAnim = useRef(new Animated.Value(0)).current;
 
@@ -34,6 +35,17 @@ export default function BikerMapScreen({ navigation }) {
       useNativeDriver: true,
     }).start();
   }, []);
+
+  useEffect(() => {
+    loadMarkers();
+  }, []);
+
+  const loadMarkers = async () => {
+    const result = await MapMarkerController.getAllMarkers();
+    if (result.success) {
+      setMarkers(result.data);
+    }
+  };
 
   useEffect(() => {
     const fetchRoutes = async () => {
@@ -217,6 +229,30 @@ export default function BikerMapScreen({ navigation }) {
                 </Marker>
               )}
             </React.Fragment>
+          ))}
+
+          {/* Marcadores de botiquines y señal */}
+          {markers.map((marker) => (
+            <Marker
+              key={marker.id}
+              coordinate={{
+                latitude: parseFloat(marker.latitude),
+                longitude: parseFloat(marker.longitude)
+              }}
+              title={getMarkerTitle(marker)}
+              description={marker.description || ''}
+            >
+              <View style={[
+                styles.customMarker,
+                { backgroundColor: getMarkerColor(marker.type) }
+              ]}>
+                {marker.type === 'first_aid' ? (
+                  <FontAwesome5 name="first-aid" size={18} color="#FFF" />
+                ) : (
+                  <MaterialIcons name="signal-cellular-4-bar" size={18} color="#FFF" />
+                )}
+              </View>
+            </Marker>
           ))}
         </MapView>
 
