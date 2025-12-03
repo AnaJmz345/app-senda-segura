@@ -13,6 +13,7 @@ import MapView, { Polyline, Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import { Ionicons, FontAwesome5, MaterialIcons } from '@expo/vector-icons';
 import TopMenu from '../../components/TopMenu';
 import { executeSql } from '../../lib/sqlite';
+import { MapMarkerController } from '../../controllers/MapMarkerController';
 
 const { width, height } = Dimensions.get('window');
 
@@ -23,6 +24,7 @@ export default function BikerMapScreen({ navigation }) {
   const [loading, setLoading] = useState(true);
   const [selectedRoute, setSelectedRoute] = useState(null);
   const [dbStatus, setDbStatus] = useState('checking');
+  const [markers, setMarkers] = useState([]);
   const mapRef = useRef(null);
   const fadeAnim = useRef(new Animated.Value(0)).current;
 
@@ -33,6 +35,17 @@ export default function BikerMapScreen({ navigation }) {
       useNativeDriver: true,
     }).start();
   }, []);
+
+  useEffect(() => {
+    loadMarkers();
+  }, []);
+
+  const loadMarkers = async () => {
+    const result = await MapMarkerController.getAllMarkers();
+    if (result.success) {
+      setMarkers(result.data);
+    }
+  };
 
   useEffect(() => {
     const fetchRoutes = async () => {
@@ -145,6 +158,15 @@ export default function BikerMapScreen({ navigation }) {
     });
   };
 
+  const getMarkerColor = (type) => {
+    return type === 'first_aid' ? '#FF4444' : '#4CAF50';
+  };
+
+  const getMarkerTitle = (marker) => {
+    if (marker.name) return marker.name;
+    return marker.type === 'first_aid' ? 'Botiquín' : 'Zona con Señal';
+  };
+
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
@@ -198,6 +220,30 @@ export default function BikerMapScreen({ navigation }) {
                 </Marker>
               )}
             </React.Fragment>
+          ))}
+
+          {/* Marcadores de botiquines y señal */}
+          {markers.map((marker) => (
+            <Marker
+              key={marker.id}
+              coordinate={{
+                latitude: parseFloat(marker.latitude),
+                longitude: parseFloat(marker.longitude)
+              }}
+              title={getMarkerTitle(marker)}
+              description={marker.description || ''}
+            >
+              <View style={[
+                styles.customMarker,
+                { backgroundColor: getMarkerColor(marker.type) }
+              ]}>
+                {marker.type === 'first_aid' ? (
+                  <FontAwesome5 name="first-aid" size={18} color="#FFF" />
+                ) : (
+                  <MaterialIcons name="signal-cellular-4-bar" size={18} color="#FFF" />
+                )}
+              </View>
+            </Marker>
           ))}
         </MapView>
 
@@ -453,6 +499,21 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: "#fff",
     elevation: 4,
+  },
+
+  customMarker: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: '#FFF',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 3,
+    elevation: 5,
   },
 
   routeCard: {
