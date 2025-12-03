@@ -201,8 +201,8 @@ profileImage: {
 },
 editIcon: {
   position: 'absolute',
-  bottom: 10,       // ⬅️ Ajusta según te guste
-  right: 10,        // ⬅️ Lo coloca en la esquina
+  bottom: 10,      
+  right: 10,       
   backgroundColor: '#D19761',
   padding: 8,
   borderRadius: 20,

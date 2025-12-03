@@ -5,6 +5,7 @@ import { Picker } from '@react-native-picker/picker';
 import { useAuth } from '../../context/AuthContext';
 import { MedicalDataController } from '../../../controllers/MedicalDataController';
 import { logInfo,logError } from '../../../utils/logger';
+import { Platform } from 'react-native';
 
 export default function BikerMedicalDataForm({navigation}) {
   const { user } = useAuth();
@@ -164,7 +165,7 @@ const styles = StyleSheet.create({
   },
   backButtonContainer: {
     position: 'absolute', 
-    top: 40,
+    top: 50,
     left: 20,
   },
   button: {
@@ -181,7 +182,7 @@ const styles = StyleSheet.create({
   },
   titleContainer: {
     flex: 1,
-    marginTop: 45,
+    marginTop: 75,
     alignItems: 'center',  
   },
   title: { 
@@ -208,15 +209,22 @@ const styles = StyleSheet.create({
   inputDisabled: {
     opacity: 0.5,
   },
-  pickerContainer: {
-    backgroundColor: '#E8E5E1',
-    borderRadius: 8,
-    marginBottom: 18,
-  },
-  picker: {
-    height: 50,
-    width: '100%',
-  },
+pickerContainer: {
+  backgroundColor: '#E8E5E1',
+  borderRadius: 8,
+  marginBottom: 18,
+  height: 50,          
+  justifyContent: 'center',
+  overflow: 'hidden',    
+},
+
+picker: {
+  width: '100%',
+  height: Platform.OS === 'ios' ? 210 : 50, 
+  position: Platform.OS === 'ios' ? 'absolute' : 'relative',
+  top: Platform.OS === 'ios' ? -80 : 0,      
+},
+
   saveButton: {
     backgroundColor: 'transparent',
     borderRadius: 8,

@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, ScrollView, SafeAreaView, Alert, ActivityIndicator } from 'react-native';
+import { 
+  View, Text, TextInput, StyleSheet, TouchableOpacity, ScrollView, 
+  SafeAreaView, Alert, ActivityIndicator, Platform 
+} from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { COLORS } from '../../constants/colors';
 import { useAuth } from '../../context/AuthContext';
@@ -16,7 +19,6 @@ const RegisterNewCaseScreen = ({ navigation }) => {
   const [injuryDescription, setInjuryDescription] = useState('');
   const [loading, setLoading] = useState(false);
 
-  // Load bikers on mount
   React.useEffect(() => {
     const loadBikers = async () => {
       try {
@@ -43,22 +45,19 @@ const RegisterNewCaseScreen = ({ navigation }) => {
       bikerName,
       injuryType,
       injuryDescription,
-      emergencyId: null, // Por ahora null
+      emergencyId: null,
     };
 
     try {
       setLoading(true);
       await ParamedicCaseController.createCase(user.id, newCase);
-      
-      // Clear form
+
       setBikerName('');
       setInjuryDescription('');
       setInjuryType('Fractura');
+
+      navigation.navigate('ParamedicProfileScreen');
       
-      // Navigate to ParamedicProfileScreen immediately
-      if (navigation) {
-        navigation.navigate('ParamedicProfileScreen');
-      }
     } catch (error) {
       console.error('Error registering case:', error);
       Alert.alert('Error', error.message || 'No se pudo registrar el caso. Por favor, intenta nuevamente.');
@@ -70,16 +69,20 @@ const RegisterNewCaseScreen = ({ navigation }) => {
   return (
     <SafeAreaView style={styles.safeArea}>
       <ScrollView style={styles.container}>
+
+        {/* FIX: rename button style */}
         <View style={styles.backButtonContainer}>
-        <TouchableOpacity style={styles.button} onPress={() => navigation.goBack()}>
-          <Ionicons name="chevron-back" size={20} color="black" />
-        </TouchableOpacity>
-      </View>
+          <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+            <Ionicons name="chevron-back" size={27} color="black" />
+          </TouchableOpacity>
+        </View>
+
         <View style={styles.header}>
           <Text style={styles.headerText}>Registrar caso nuevo</Text>
         </View>
-        
+
         <Text style={styles.label}>Ciclista</Text>
+
         {loadingBikers ? (
           <View style={styles.input}>
             <ActivityIndicator size="small" color={COLORS.mediumGreen} />
@@ -94,9 +97,9 @@ const RegisterNewCaseScreen = ({ navigation }) => {
               <Picker.Item label="Seleccione un ciclista" value="" />
               {bikers.map((biker) => (
                 <Picker.Item 
-                  key={biker.id} 
-                  label={biker.display_name} 
-                  value={biker.display_name} 
+                  key={biker.id}
+                  label={biker.display_name}
+                  value={biker.display_name}
                 />
               ))}
             </Picker>
@@ -104,6 +107,7 @@ const RegisterNewCaseScreen = ({ navigation }) => {
         )}
 
         <Text style={styles.label}>Tipo de lesión</Text>
+
         <View style={styles.pickerContainer}>
           <Picker
             selectedValue={injuryType}
@@ -121,6 +125,7 @@ const RegisterNewCaseScreen = ({ navigation }) => {
         </View>
 
         <Text style={styles.label}>Descripción de la lesión</Text>
+
         <TextInput
           style={[styles.input, styles.multilineInput]}
           value={injuryDescription}
@@ -132,7 +137,7 @@ const RegisterNewCaseScreen = ({ navigation }) => {
         />
 
         <TouchableOpacity 
-          style={[styles.button, loading && styles.buttonDisabled]} 
+          style={[styles.mainButton, loading && styles.buttonDisabled]} 
           onPress={handleRegister}
           disabled={loading}
         >
@@ -142,6 +147,7 @@ const RegisterNewCaseScreen = ({ navigation }) => {
             <Text style={styles.buttonText}>Registrar caso nuevo</Text>
           )}
         </TouchableOpacity>
+
       </ScrollView>
     </SafeAreaView>
   );
@@ -152,30 +158,36 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: COLORS.white,
   },
-  backButtonContainer: { position: 'absolute', top: -50, left: -10 },
-  button: {
+
+  backButtonContainer: { position: 'absolute', top: 0, left: 0 },
+
+  backButton: {
     backgroundColor: '#D19761',
-    padding: 3,
-    borderRadius: 3,
-    elevation: 0,
+    paddingTop: 8,
+    paddingLeft: 5,
+    padding: 6,
+    borderRadius: 6,
   },
+
   container: {
     flex: 1,
     padding: 30,
     backgroundColor: COLORS.white,
   },
+
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 20,
   },
+
   headerText: {
-  paddingLeft: 60,
-  paddingTop: 10,
-  fontSize: 24,
-  fontWeight: "bold",
-  color: COLORS.darkGreen,
-  textAlign: "center",
+    paddingLeft: 60,
+    paddingTop: 10,
+    fontSize: 24,
+    fontWeight: "bold",
+    color: COLORS.darkGreen,
+    textAlign: "center",
   },
 
   label: {
@@ -184,6 +196,7 @@ const styles = StyleSheet.create({
     marginBottom: 5,
     marginTop: 60,
   },
+
   input: {
     backgroundColor: COLORS.white,
     borderWidth: 1,
@@ -193,11 +206,13 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginBottom: 10,
   },
+
   multilineInput: {
     height: 100,
     textAlignVertical: 'top',
   },
-  button: {
+
+  mainButton: {
     backgroundColor: COLORS.mediumGreen,
     borderRadius: 8,
     padding: 15,
@@ -205,27 +220,38 @@ const styles = StyleSheet.create({
     marginTop: 20,
     marginBottom: 40,
   },
+
   buttonText: {
     color: COLORS.white,
     fontSize: 18,
     fontWeight: 'bold',
   },
+
   buttonDisabled: {
     backgroundColor: COLORS.lightGreen,
     opacity: 0.7,
   },
-  pickerContainer: {
-    backgroundColor: COLORS.white,
-    borderWidth: 1,
-    borderColor: '#E0E0E0',
-    borderRadius: 8,
-    marginBottom: 10,
-    justifyContent: 'center',
-  },
-  picker: {
-    height: 50,
-    width: '100%',
-  },
+
+pickerContainer: {
+  backgroundColor: COLORS.white,
+  borderWidth: 1,
+  borderColor: '#E0E0E0',
+  borderRadius: 8,
+  marginBottom: 10,
+  height: 55,
+  justifyContent: 'center',
+  overflow: 'hidden',
+  position: 'relative',
+},
+
+
+picker: {
+  width: '100%',
+  height: 200, 
+  position: Platform.OS === 'ios' ? 'absolute' : 'relative',
+  top: Platform.OS === 'ios' ? -81 : 0,   
+},
+
 });
 
 export default RegisterNewCaseScreen;
