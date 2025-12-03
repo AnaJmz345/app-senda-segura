@@ -13,6 +13,8 @@ import MapView, { Polyline, Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import { Ionicons, FontAwesome5, MaterialIcons } from '@expo/vector-icons';
 import TopMenu from '../../components/TopMenu';
 import { executeSql } from '../../lib/sqlite';
+import StartRouteButton from "./StartRouteButton";
+
 
 const { width, height } = Dimensions.get('window');
 
@@ -369,7 +371,7 @@ export default function BikerMapScreen({ navigation }) {
           </TouchableOpacity>
         </ScrollView>
       </Animated.View>
-
+      <StartRouteButton />
     </View>
   );
 }
