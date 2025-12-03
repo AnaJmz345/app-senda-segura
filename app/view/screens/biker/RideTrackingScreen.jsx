@@ -10,6 +10,7 @@ import MapView, { Polyline, PROVIDER_GOOGLE } from "react-native-maps";
 import * as Location from "expo-location";
 import { Ionicons } from "@expo/vector-icons";
 import { useRideTracking } from "../../hooks/useRideTracking";
+import { useAuth } from "../../context/AuthContext";
 
 export default function RideTrackingScreen({ navigation }) {
   const mapRef = useRef(null);
@@ -25,6 +26,8 @@ export default function RideTrackingScreen({ navigation }) {
     stopTracking,
   } = useRideTracking(mapRef);
 
+  const { user } = useAuth();
+
   // UI animation
   useEffect(() => {
     Animated.timing(fadeAnim, {
@@ -37,8 +40,7 @@ export default function RideTrackingScreen({ navigation }) {
   // Center map on user immediately
   useEffect(() => {
     (async () => {
-      const { status } =
-        await Location.requestForegroundPermissionsAsync();
+      const { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== "granted") return;
 
       const loc = await Location.getCurrentPositionAsync({});
@@ -57,9 +59,7 @@ export default function RideTrackingScreen({ navigation }) {
     const m = Math.floor((sec % 3600) / 60);
     const s = sec % 60;
     return h > 0
-      ? `${h}:${m.toString().padStart(2, "0")}:${s
-          .toString()
-          .padStart(2, "0")}`
+      ? `${h}:${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`
       : `${m}:${s.toString().padStart(2, "0")}`;
   };
 
@@ -88,7 +88,7 @@ export default function RideTrackingScreen({ navigation }) {
         )}
       </MapView>
 
-      {/* BEAUTIFUL card */}
+      
       <Animated.View style={[styles.card, { opacity: fadeAnim }]}>
         <View style={styles.metricsRow}>
           <View style={styles.metricBlock}>
@@ -114,12 +114,33 @@ export default function RideTrackingScreen({ navigation }) {
         ) : (
           <TouchableOpacity
             style={styles.stopBtn}
-            onPress={() => {
+            onPress={async () => {
               stopTracking();
+
+              const finalPath = finishedPath.length ? finishedPath : pathCoords;
+
+              // GUARDAR RUTA EN SUPABASE
+              const {
+                saveRideToSupabase,
+              } = require("../../../controllers/saveRideToSupabase");
+              const result = await saveRideToSupabase(
+                user.id,
+                distanceKm,
+                elapsedSec,
+                finalPath
+              );
+
+              if (!result.success) {
+                console.log(
+                  "⚠ No se pudo guardar la ruta, error:",
+                  result.error
+                );
+              }
+
               navigation.navigate("RideSummaryScreen", {
                 distance: distanceKm,
                 time: elapsedSec,
-                path: finishedPath.length ? finishedPath : pathCoords,
+                path: finalPath,
               });
             }}
           >
@@ -145,7 +166,7 @@ const styles = StyleSheet.create({
     paddingBottom: 35,
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
-    backgroundColor: "rgba(17, 35, 27, 0.97)", // hermoso verde oscuro
+    backgroundColor: "rgba(17, 35, 27, 0.97)", 
     shadowColor: "#000",
     shadowOpacity: 0.3,
     shadowRadius: 20,

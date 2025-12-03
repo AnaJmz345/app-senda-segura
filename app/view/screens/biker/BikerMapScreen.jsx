@@ -311,7 +311,7 @@ export default function BikerMapScreen({ navigation }) {
           </Animated.View>
         )}
 
-        {/* INFO LABEL */}
+    
         {!selectedRoute && (
           <View style={styles.mapInfo}>
             <Text style={styles.mapInfoText}>
@@ -328,7 +328,7 @@ export default function BikerMapScreen({ navigation }) {
         )}
       </View>
 
-      {/* FILTERS */}
+    
       {!selectedRoute && (
         <Animated.View style={[styles.filterContainer, { opacity: fadeAnim }]}>
           <Text style={styles.filterTitle}>Filtrar por dificultad:</Text>
@@ -338,7 +338,7 @@ export default function BikerMapScreen({ navigation }) {
             contentContainerStyle={styles.filterScrollContent}
           >
 
-            {/* All */}
+         
             <TouchableOpacity
               style={[
                 styles.filterButton,
@@ -362,7 +362,7 @@ export default function BikerMapScreen({ navigation }) {
               </Text>
             </TouchableOpacity>
 
-            {/* Easy */}
+          
             <TouchableOpacity
               style={[
                 styles.filterButton,
