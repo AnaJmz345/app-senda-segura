@@ -13,6 +13,7 @@ import MapView, { Polyline, Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import { Ionicons, FontAwesome5, MaterialIcons } from '@expo/vector-icons';
 import TopMenu from '../../components/TopMenu';
 import { executeSql } from '../../lib/sqlite';
+import { MapMarkerController } from '../../../controllers/MapMarkerController';
 import StartRouteButton from "./StartRouteButton";
 
 const { width, height } = Dimensions.get('window');
@@ -176,6 +177,15 @@ export default function BikerMapScreen({ navigation }) {
       800
     );
   };
+  const getMarkerColor = (type) => {
+  return type === 'first_aid' ? '#FF4444' : '#4CAF50';
+};
+
+const getMarkerTitle = (marker) => {
+  if (marker.name) return marker.name;
+  return marker.type === 'first_aid' ? 'Botiquín' : 'Zona con Señal';
+};
+  
 
   if (loading) {
     return (
@@ -697,4 +707,18 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: "#fff",
   },
+  customMarker: {
+  width: 36,
+  height: 36,
+  borderRadius: 18,
+  justifyContent: 'center',
+  alignItems: 'center',
+  borderWidth: 2,
+  borderColor: '#FFF',
+  shadowColor: '#000',
+  shadowOffset: { width: 0, height: 2 },
+  shadowOpacity: 0.3,
+  shadowRadius: 3,
+  elevation: 5,
+},
 });
