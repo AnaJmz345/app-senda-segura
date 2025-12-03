@@ -82,70 +82,68 @@ export default function BikerMedicalDataForm({ navigation }) {
   };
 
   const renderBloodTypePicker = () => {
-    if (Platform.OS === 'ios') {
-      // Picker estilo iOS con Modal
-      return (
-        <>
-          <TouchableOpacity
-            style={[styles.input, !isEditing && styles.inputDisabled]}
-            onPress={() => isEditing && setShowBloodTypePicker(true)}
-            disabled={!isEditing}
-          >
-            <Text style={styles.pickerButtonText}>{form.blood_type}</Text>
-            {isEditing && <Ionicons name="chevron-down" size={20} color="#666" />}
-          </TouchableOpacity>
+    return (
+      <>
+        <TouchableOpacity
+          style={[styles.input, !isEditing && styles.inputDisabled]}
+          onPress={() => isEditing && setShowBloodTypePicker(true)}
+          disabled={!isEditing}
+          activeOpacity={0.7}
+        >
+          <Text style={styles.pickerButtonText}>{form.blood_type}</Text>
+          {isEditing && <Ionicons name="chevron-down" size={20} color="#666" />}
+        </TouchableOpacity>
 
-          <Modal
-            visible={showBloodTypePicker}
-            transparent={true}
-            animationType="slide"
+        <Modal
+          visible={showBloodTypePicker}
+          transparent={true}
+          animationType={Platform.OS === 'ios' ? 'slide' : 'fade'}
+          onRequestClose={() => setShowBloodTypePicker(false)}
+        >
+          <TouchableOpacity 
+            style={styles.modalOverlay}
+            activeOpacity={1}
+            onPress={() => setShowBloodTypePicker(false)}
           >
-            <View style={styles.modalOverlay}>
-              <View style={styles.modalContent}>
-                <View style={styles.modalHeader}>
-                  <TouchableOpacity onPress={() => setShowBloodTypePicker(false)}>
-                    <Text style={styles.modalDoneButton}>Listo</Text>
-                  </TouchableOpacity>
-                </View>
-                <Picker
-                  selectedValue={form.blood_type}
-                  onValueChange={(value) => setForm({ ...form, blood_type: value })}
-                  style={styles.iosPicker}
-                >
-                  {bloodTypes.map((type) => (
-                    <Picker.Item 
-                      key={type.value} 
-                      label={type.label} 
-                      value={type.value} 
-                    />
-                  ))}
-                </Picker>
+            <View style={Platform.OS === 'ios' ? styles.iosPickerContainer : styles.androidPickerContainer}>
+              <View style={styles.pickerHeader}>
+                <Text style={styles.pickerTitle}>Tipo de sangre</Text>
+                <TouchableOpacity onPress={() => setShowBloodTypePicker(false)}>
+                  <Text style={styles.pickerDoneButton}>
+                    {Platform.OS === 'ios' ? 'Listo' : '×'}
+                  </Text>
+                </TouchableOpacity>
               </View>
+              <ScrollView style={styles.pickerList}>
+                {bloodTypes.map((type) => (
+                  <TouchableOpacity
+                    key={type.value}
+                    style={[
+                      styles.pickerItem,
+                      form.blood_type === type.value && styles.pickerItemSelected
+                    ]}
+                    onPress={() => {
+                      setForm({ ...form, blood_type: type.value });
+                      setShowBloodTypePicker(false);
+                    }}
+                  >
+                    <Text style={[
+                      styles.pickerItemText,
+                      form.blood_type === type.value && styles.pickerItemTextSelected
+                    ]}>
+                      {type.label}
+                    </Text>
+                    {form.blood_type === type.value && (
+                      <Ionicons name="checkmark" size={24} color="#D19761" />
+                    )}
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
             </View>
-          </Modal>
-        </>
-      );
-    } else {
-      // Picker estilo Android (dropdown nativo)
-      return (
-        <View style={[styles.pickerContainer, !isEditing && styles.inputDisabled]}>
-          <Picker
-            selectedValue={form.blood_type}
-            enabled={isEditing}
-            onValueChange={(value) => setForm({ ...form, blood_type: value })}
-            style={styles.picker}
-          >
-            {bloodTypes.map((type) => (
-              <Picker.Item 
-                key={type.value} 
-                label={type.label} 
-                value={type.value} 
-              />
-            ))}
-          </Picker>
-        </View>
-      );
-    }
+          </TouchableOpacity>
+        </Modal>
+      </>
+    );
   };
 
   return (
@@ -284,42 +282,71 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#000',
   },
-  pickerContainer: {
-    backgroundColor: '#E8E5E1',
-    borderRadius: 8,
-    marginBottom: 18,
-  },
-  picker: {
-    height: 50,
-    width: '100%',
-  },
-  // Estilos del Modal para iOS
+  // Estilos del Modal
   modalOverlay: {
     flex: 1,
-    justifyContent: 'flex-end',
+    justifyContent: Platform.OS === 'ios' ? 'flex-end' : 'center',
+    alignItems: Platform.OS === 'ios' ? 'stretch' : 'center',
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
-  modalContent: {
+  iosPickerContainer: {
     backgroundColor: '#fff',
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
-    paddingBottom: 34, // Safe area para iPhone
+    paddingBottom: 34,
+    maxHeight: '50%',
   },
-  modalHeader: {
+  androidPickerContainer: {
+    backgroundColor: '#fff',
+    borderRadius: 16,
+    width: '85%',
+    maxHeight: '60%',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 8,
+  },
+  pickerHeader: {
     flexDirection: 'row',
-    justifyContent: 'flex-end',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     padding: 16,
     borderBottomWidth: 1,
     borderBottomColor: '#E0E0E0',
   },
-  modalDoneButton: {
+  pickerTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#333',
+  },
+  pickerDoneButton: {
     color: '#D19761',
-    fontSize: 17,
+    fontSize: Platform.OS === 'ios' ? 17 : 28,
     fontWeight: '600',
   },
-  iosPicker: {
-    width: '100%',
-    height: 200,
+  pickerList: {
+    maxHeight: 400,
+  },
+  pickerItem: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 16,
+    paddingHorizontal: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: '#F0F0F0',
+  },
+  pickerItemSelected: {
+    backgroundColor: '#FFF5ED',
+  },
+  pickerItemText: {
+    fontSize: 17,
+    color: '#333',
+  },
+  pickerItemTextSelected: {
+    color: '#D19761',
+    fontWeight: '600',
   },
   saveButton: {
     backgroundColor: 'transparent',
