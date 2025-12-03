@@ -14,12 +14,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { Picker } from '@react-native-picker/picker';
 import { useAuth } from '../../context/AuthContext';
 import { MedicalDataController } from '../../../controllers/MedicalDataController';
-<<<<<<< HEAD
 import { logInfo,logError } from '../../../utils/logger';
 import { Platform } from 'react-native';
-=======
-import { logInfo, logError } from '../../../utils/logger';
->>>>>>> 68f89b19fe2e08bbc75a2800e3bf4c49d5887050
 
 export default function BikerMedicalDataForm({ navigation }) {
   const { user } = useAuth();
@@ -238,13 +234,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#F8F8F8',
   },
   backButtonContainer: {
-<<<<<<< HEAD
     position: 'absolute', 
     top: 50,
-=======
-    position: 'absolute',
-    top: 40,
->>>>>>> 68f89b19fe2e08bbc75a2800e3bf4c49d5887050
     left: 20,
   },
   button: {
@@ -261,13 +252,8 @@ const styles = StyleSheet.create({
   },
   titleContainer: {
     flex: 1,
-<<<<<<< HEAD
     marginTop: 75,
     alignItems: 'center',  
-=======
-    marginTop: 45,
-    alignItems: 'center',
->>>>>>> 68f89b19fe2e08bbc75a2800e3bf4c49d5887050
   },
   title: {
     fontSize: 22,
@@ -295,7 +281,6 @@ const styles = StyleSheet.create({
   inputDisabled: {
     opacity: 0.5,
   },
-<<<<<<< HEAD
 pickerContainer: {
   backgroundColor: '#E8E5E1',
   borderRadius: 8,
@@ -312,49 +297,6 @@ picker: {
   top: Platform.OS === 'ios' ? -80 : 0,      
 },
 
-=======
-  pickerButtonText: {
-    fontSize: 16,
-    color: '#000',
-  },
-  pickerContainer: {
-    backgroundColor: '#E8E5E1',
-    borderRadius: 8,
-    marginBottom: 18,
-  },
-  picker: {
-    height: 50,
-    width: '100%',
-  },
-  // Estilos del Modal para iOS
-  modalOverlay: {
-    flex: 1,
-    justifyContent: 'flex-end',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-  },
-  modalContent: {
-    backgroundColor: '#fff',
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    paddingBottom: 34, // Safe area para iPhone
-  },
-  modalHeader: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    padding: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#E0E0E0',
-  },
-  modalDoneButton: {
-    color: '#D19761',
-    fontSize: 17,
-    fontWeight: '600',
-  },
-  iosPicker: {
-    width: '100%',
-    height: 200,
-  },
->>>>>>> 68f89b19fe2e08bbc75a2800e3bf4c49d5887050
   saveButton: {
     backgroundColor: 'transparent',
     borderRadius: 8,
