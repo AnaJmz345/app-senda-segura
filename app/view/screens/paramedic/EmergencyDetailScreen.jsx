@@ -57,7 +57,7 @@ export default function EmergencyDetailScreen({ route, navigation }) {
               const { error } = await supabase
                 .from('emergencies')
                 .update({ 
-                  status: 'attended',
+                  status: 'resolved',
                   attended_by: user.id,
                   updated_at: new Date().toISOString(),
                 })
