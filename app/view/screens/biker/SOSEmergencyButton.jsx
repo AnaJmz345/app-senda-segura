@@ -4,9 +4,11 @@ import * as Location from "expo-location";
 import { useAuth } from "../../context/AuthContext";
 import { getLocalProfileById } from "../../../models/BikerProfileModel";
 import { EmergencyController } from "../../../controllers/EmergencyController";
+import { useBikerSession } from "../../context/BikerSessionContext";
 
 export default function SOSEmergencyButton({ navigation, currentRoute }) {
   const { user } = useAuth();
+  const { activeSession, checkingSession } = useBikerSession();
 
   const handleSOS = async () => {
     // 1. Obtener perfil local
@@ -44,11 +46,26 @@ export default function SOSEmergencyButton({ navigation, currentRoute }) {
     }
   };
 
+  // Botón deshabilitado si no hay sesión activa o si está verificando
+  const isDisabled = checkingSession || !activeSession;
+
   return (
     <View style={styles.wrapper}>
-      <TouchableOpacity style={styles.button} onPress={handleSOS}>
+      <TouchableOpacity 
+        style={[
+          styles.button,
+          isDisabled && styles.buttonDisabled
+        ]}
+        onPress={handleSOS}
+        disabled={isDisabled}
+      >
         <Text style={styles.text}>SOS</Text>
       </TouchableOpacity>
+      {isDisabled && (
+        <Text style={styles.disabledText}>
+          {checkingSession ? 'Verificando...' : 'Inicia una ruta primero'}
+        </Text>
+      )}
     </View>
   );
 }
@@ -73,9 +90,24 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 4,
   },
+  buttonDisabled: {
+    backgroundColor: "#CCCCCC",
+    borderColor: "#999999",
+    elevation: 2,
+    shadowOpacity: 0.1,
+  },
   text: {
     color: "white",
     fontWeight: "900",
     fontSize: 16,
+    textAlign: "center",
   },
+  disabledText: {
+    marginTop: 6,
+    color: "#666666",
+    fontSize: 10,
+    fontWeight: "600",
+    textAlign: "center",
+    maxWidth: 80,
+  }
 });

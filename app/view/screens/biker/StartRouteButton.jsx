@@ -3,9 +3,11 @@ import { TouchableOpacity, Text, StyleSheet } from "react-native";
 import * as Location from "expo-location";
 import { supabase } from "../../lib/supabase";
 import { useAuth } from "../../context/AuthContext";
+import { useBikerSession } from "../../context/BikerSessionContext";
 
 export default function StartRouteButton() {
   const { user } = useAuth();
+  const { sessionStarted } = useBikerSession();
 
   const startRoute = async () => {
     try {
@@ -35,9 +37,16 @@ export default function StartRouteButton() {
               coordinates: [coords.longitude, coords.latitude], // GeoJSON válido
             },
           },
-        ]);
+        ])
+        .select()
+        .single();
 
       if (error) throw error;
+
+      // Notificar al contexto que la sesión fue iniciada
+      if (data) {
+        sessionStarted(data);
+      }
 
       alert("Ruta iniciada correctamente.");
     } catch (err) {

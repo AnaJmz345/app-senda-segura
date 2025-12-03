@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { AuthProvider, useAuth } from './app/view/context/AuthContext';
+import { BikerSessionProvider } from './app/view/context/BikerSessionContext';
 import AppNavigator from './app/view/navigation/AppNavigator';
 import { initLocalDB } from './app/view/lib/initLocalDB';
 import { downloadProfileFromSupabase, syncPendingProfile } from "./app/view/lib/syncProfile";
@@ -67,9 +68,11 @@ function AppContent() {
 export default function App() {
   return (
     <SafeAreaProvider>
-    <AuthProvider>
-      <AppContent />
-    </AuthProvider>
+      <AuthProvider>
+        <BikerSessionProvider>
+          <AppContent />
+        </BikerSessionProvider>
+      </AuthProvider>
     </SafeAreaProvider>
   );
 }
