@@ -154,12 +154,17 @@ export default function BikerMapScreen({ navigation }) {
     }
   };
 
-  const navigateToRouteDetail = (route) => {
-    navigation.navigate('BikerRouteDetail', {
-      routeId: route.id,
-      routeName: route.name
-    });
-  };
+ const navigateToRouteDetail = (route) => {
+  navigation.navigate("BikerRouteDetail", {
+    routeId: route.id,
+    routeName: route.name,
+    difficulty: route.difficulty,
+    distance_km: route.distance_km,
+    duration_min: route.duration_min,
+    description: route.description,
+  });
+};
+
 
   // RESET VIEW TO SHOW ALL ROUTES
   const resetRoutes = () => {
