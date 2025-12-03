@@ -372,7 +372,8 @@ export default function BikerMapScreen({ navigation }) {
             </Text>
           </TouchableOpacity>
         </ScrollView>
-         <SOSEmergencyButton onPress={() => navigation.navigate("SOSEmergencyCallScreen")} />
+         <SOSEmergencyButton navigation={navigation}
+        currentRoute={selectedRoute} />
       </Animated.View>
       <StartRouteButton />
     </View>
