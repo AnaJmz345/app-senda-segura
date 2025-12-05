@@ -1,6 +1,7 @@
 import React from "react";
 import { TouchableOpacity, Text, StyleSheet } from "react-native";
 
+//Biker sessiom context debe emigrar a algun RiedTracking
 export default function StartRouteButton({ navigation, styleOverride = {} }) {
   return (
     <TouchableOpacity
@@ -24,4 +25,4 @@ const styles = StyleSheet.create({
     elevation: 6,
   },
   text: { color: "white", fontWeight: "700", fontSize: 15 },
-});
+})

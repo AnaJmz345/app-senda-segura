@@ -1,17 +1,20 @@
 import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
-import BikerMapScreen from "../screens/biker/BikerMapScreen";
-import BikerRouteDetail from "../screens/biker/BikerRouteDetail";
-import RateRouteScreen from "../screens/biker/RateRouteScreen";
-import RouteReviews from "../screens/biker/RouteReviews";
-import BikerProfileScreen from "../screens/biker/BikerProfileScreen";
-import BikerMedicalDataForm from "../screens/biker/BikerMedicalDataForm";
-import EditBikerProfile from "../screens/biker/EditBikerProfile";
-import EmergencyContacts from "../screens/biker/EmergencyContacts";
+// Screens biker
+import BikerMapScreen from '../screens/biker/BikerMapScreen';
+import BikerProfileScreen from '../screens/biker/BikerProfileScreen';
+import BikerMedicalDataForm from '../screens/biker/BikerMedicalDataForm';
+import EditBikerProfile from '../screens/biker/EditBikerProfile';
+import EmergencyContacts from '../screens/biker/EmergencyContacts';
+import BikerRouteDetail from '../screens/biker/BikerRouteDetail';
+import RateRouteScreen from '../screens/biker/RateRouteScreen';
+import RouteReviews from '../screens/biker/RouteReviews';
+import EmergencyScreen from "../screens/biker/SOSEmergencyCallScreen";
 import RideTrackingScreen from "../screens/biker/RideTrackingScreen";
 import RideSummaryScreen from "../screens/biker/RideSummaryScreen";
 import UserRideHistoryScreen from "../screens/biker/UserRideHistoryScreen";
+
 
 const Stack = createNativeStackNavigator();
 
@@ -37,11 +40,13 @@ export default function BikerTabNavigator({ navigation }) {
       />
       <Stack.Screen name="EditBikerProfile" component={EditBikerProfile} />
       <Stack.Screen name="EmergencyContacts" component={EmergencyContacts} />
+      <Stack.Screen name="SOSEmergencyCallScreen" component={EmergencyScreen} />
       <Stack.Screen
         name="UserRideHistoryScreen"
         component={UserRideHistoryScreen}
         options={{ title: "Mis rutas" }}
       />
+
     </Stack.Navigator>
   );
 }

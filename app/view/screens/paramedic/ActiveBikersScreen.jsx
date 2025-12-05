@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import TopMenu from '../../components/TopMenu';
-import EmergencyCard from '../../components/EmergencyCard';
+import EmergencyCardVertical from '../../components/EmergencyCardVert';
 import PadCarts from '../../components/PadCarts';
 
 const COLORS = {
@@ -38,22 +38,21 @@ export default function ActiveBikersScreen({ navigation }) {
         <View style={styles.grid}>
           <PadCarts
             title="Principiante"
-            count={16}
+            count={8}
             color={COLORS.green}
           />
           <PadCarts
             title="Intermedio"
-            count={20}
+            count={9}
             color={COLORS.blue}
           />
           <PadCarts
             title="Avanzado"
-            count={4}
+            count={1}
             color={COLORS.orange}
           />
-          <EmergencyCard
-            count={3}
-            onPress={() => navigation.navigate()}
+          <EmergencyCardVertical
+            onPress={() => navigation.navigate("EmergencyListScreen")}
           />
         </View>
       </View>

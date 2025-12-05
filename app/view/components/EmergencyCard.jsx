@@ -1,43 +1,118 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { FontAwesome5 } from '@expo/vector-icons';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { MaterialIcons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
+import { supabase } from '../lib/supabase';
 
-export default function EmergencyCard({ count, onPress }) {
+export default function EmergencyCard() {
+  const navigation = useNavigation();
+  const [count, setCount] = useState(0);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    loadCount();
+
+    // Actualizar cada 30 segundos
+    const interval = setInterval(loadCount, 30000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  const loadCount = async () => {
+    try {
+      const { count, error } = await supabase
+        .from('emergencies')
+        .select('*', { count: 'exact', head: true })
+        .eq('status', 'pending');
+
+      if (error) throw error;
+
+      setCount(count || 0);
+    } catch (err) {
+      console.error('Error contando emergencias:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handlePress = () => {
+    navigation.navigate('EmergencyListScreen');
+  };
+
   return (
-    <View style={styles.card}>
-      <Text style={styles.title}>Llamadas de{"\n"}emergencia</Text>
-      <Text style={styles.number}>{count}</Text>
-      <TouchableOpacity style={styles.button} onPress={onPress}>
-        <FontAwesome5 name="heart" size={14} color="#fff" />
-        <Text style={styles.btnText}> Atender</Text>
-      </TouchableOpacity>
-    </View>
+    <TouchableOpacity
+      style={styles.card}
+      onPress={handlePress}
+      activeOpacity={0.7}
+    >
+      <View style={styles.iconContainer}>
+        <MaterialIcons name="emergency" size={32} color="#FF5252" />
+      </View>
+
+      <View style={styles.content}>
+        <Text style={styles.title}>Emergencias Activas</Text>
+        {loading ? (
+          <ActivityIndicator size="small" color="#FF5252" />
+        ) : (
+          <View style={styles.countContainer}>
+            <Text style={styles.count}>{count}</Text>
+            <Text style={styles.countLabel}>
+              {count === 1 ? 'emergencia' : 'emergencias'}
+            </Text>
+          </View>
+        )}
+      </View>
+
+      <MaterialIcons name="chevron-right" size={28} color="#999" />
+    </TouchableOpacity>
   );
 }
 
 const styles = StyleSheet.create({
   card: {
-    width: '47%',
-    borderRadius: 18,
-    backgroundColor: '#FCEEEF',
-    padding: 14,
-    shadowColor: '#000',
-    shadowOpacity: 0.18,
-    shadowRadius: 10,
-    shadowOffset: { width: 0, height: 6 },
-    elevation: 6,
-  },
-  title: { color: '#030303ff', fontWeight: '700', textAlign: 'center', fontSize: 16, lineHeight: 20 },
-  number: { fontSize: 42, fontWeight: '800', color: '#2E2E2E', marginVertical: 8, textAlign: 'center' },
-  button: {
-    alignSelf: 'center',
-    backgroundColor: '#B3272D',
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    borderRadius: 16,
     flexDirection: 'row',
     alignItems: 'center',
-
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    padding: 30,
+    marginHorizontal: 20,
+    marginVertical: 15,
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 4,
+    borderLeftWidth: 4,
+    borderLeftColor: '#FF5252',
   },
-  btnText: { color: '#fff', fontWeight: '700' },
+  iconContainer: {
+    backgroundColor: '#FFEBEE',
+    padding: 12,
+    borderRadius: 12,
+    marginRight: 15,
+  },
+  content: {
+    flex: 1,
+  },
+  title: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#333',
+    marginBottom: 4,
+  },
+  countContainer: {
+    flexDirection: 'row',
+    alignItems: 'baseline',
+  },
+  count: {
+    fontSize: 24,
+    fontWeight: '700',
+    color: '#FF5252',
+    marginRight: 6,
+  },
+  countLabel: {
+    fontSize: 14,
+    color: '#666',
+  },
 });
+

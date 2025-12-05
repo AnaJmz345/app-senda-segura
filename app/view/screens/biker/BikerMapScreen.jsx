@@ -14,10 +14,16 @@ import { Ionicons, FontAwesome5, MaterialIcons } from '@expo/vector-icons';
 import TopMenu from '../../components/TopMenu';
 import { executeSql } from '../../lib/sqlite';
 import StartRouteButton from "./StartRouteButton";
+import SOSEmergencyButton from "./SOSEmergencyButton";
+import { useAuth } from '../../context/AuthContext';
+import { useBikerSession } from '../../context/BikerSessionContext';
+
 
 const { width, height } = Dimensions.get('window');
 
 export default function BikerMapScreen({ navigation }) {
+  const { user } = useAuth();
+  const { activeSession, checkingSession, checkSession } = useBikerSession();
   const [routes, setRoutes] = useState([]);
   const [filteredRoutes, setFilteredRoutes] = useState([]);
   const [selectedDifficulty, setSelectedDifficulty] = useState('all');
@@ -105,6 +111,13 @@ export default function BikerMapScreen({ navigation }) {
 
     fetchRoutes();
   }, []);
+
+  // Verificar sesión activa al montar
+  useEffect(() => {
+    if (!user?.id) return;
+
+    checkSession(user.id);
+  }, [user?.id, checkSession]);
 
   const filterRoutes = (difficulty) => {
     setSelectedDifficulty(difficulty);
@@ -477,9 +490,11 @@ export default function BikerMapScreen({ navigation }) {
               </Text>
             </TouchableOpacity>
           </ScrollView>
+          <SOSEmergencyButton navigation={navigation}
+        currentRoute={selectedRoute} />
         </Animated.View>
       )}
-
+      aqui cual es la diferencia entre ambos botones
       <StartRouteButton navigation={navigation} styleOverride={{
       bottom: selectedRoute ? 290 : 110
 }} />

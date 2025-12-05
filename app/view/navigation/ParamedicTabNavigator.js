@@ -3,11 +3,11 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import ParamedicProfileScreen from '../screens/paramedic/ParamedicProfileScreen';
 import ActiveBikersScreen from '../screens/paramedic/ActiveBikersScreen';
 import CasesHistory from '../screens/paramedic/CasesHistory';
-import EmergencyCall from '../screens/paramedic/EmergencyCall';
 import RegisterNewCaseScreen from '../screens/paramedic/RegisterNewCaseScreen';
 import EditBikerProfile from '../screens/biker/EditBikerProfile';
+import EmergencyListScreen from '../screens/paramedic/EmergencyListScreen';
+import EmergencyDetailScreen from '../screens/paramedic/EmergencyDetailScreen';
 const Stack = createNativeStackNavigator();
-
 
 export default function ParamedicTabNavigator({ navigation }) {
   return (
@@ -35,8 +35,13 @@ export default function ParamedicTabNavigator({ navigation }) {
         />
 
         <Stack.Screen
-          name="EmergencyCall" 
-          component={EmergencyCall}
+          name="EmergencyListScreen" 
+          component={EmergencyListScreen}
+          navigation={navigation}
+        />
+         <Stack.Screen
+          name="EmergencyDetailScreen" 
+          component={EmergencyDetailScreen}
           navigation={navigation}
         />
         <Stack.Screen 
